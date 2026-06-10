@@ -10,13 +10,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #0f172a; font-family: 'Segoe UI', sans-serif; }
+  body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
   select, input { -webkit-appearance: none; appearance: none; }
   input[type=time]::-webkit-calendar-picker-indicator,
-  input[type=date]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; }
+  input[type=date]::-webkit-calendar-picker-indicator { opacity: 0.6; cursor: pointer; }
   ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: #1e293b; }
-  ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+  ::-webkit-scrollbar-track { background: #f1f5f9; }
+  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 </style>
 </head>
 <body>
@@ -26,9 +26,7 @@
 const KIOSK_URL = "https://fabremin2-debug.github.io/kiosk1/";
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVRC4ltnSh6SMltl9GVljNqwK-Rm-PIFThSD6X-R4NiNxhYNl8vj0lkB1Y3jYX7HZT3w/exec";
 
-// type: "short"=단기, "long"=장기(Hour,날짜+시간), "cage"=챔버(날짜+마리수)
 const EQUIPMENT = [
-  // 단기
   { name: "회전농축기-4",             code: "12CBF-12D3A3201",  fee: 550,   unit: "Hour", type: "short" },
   { name: "회전배양기",               code: "98B24-01D3A3806",  fee: 400,   unit: "Hour", type: "short" },
   { name: "가스크로마토그래프-4",     code: "08A19-10D3A3202",  fee: 2360,  unit: "Hour", type: "short" },
@@ -54,7 +52,6 @@ const EQUIPMENT = [
   { name: "고압멸균기-9",             code: "08A19-11D3A4901",  fee: 270,   unit: "Hour", type: "short" },
   { name: "도립현미경-1",             code: "98B24-99D3A2507",  fee: 230,   unit: "Hour", type: "short" },
   { name: "자외-가시선분광광도계-7",  code: "02A19-03D3A6704",  fee: 320,   unit: "Hour", type: "short" },
-  // 장기 (날짜+시간)
   { name: "고속액체크로마토그래프-5", code: "02A19-04D3A6704",  fee: 5000,  unit: "Hour", type: "long" },
   { name: "고속액체크로마토그래프-8", code: "08A19-09D3A2605",  fee: 5000,  unit: "Hour", type: "long" },
   { name: "고속액체크로마토그래프-11",code: "15CBF-15D3A2201",  fee: 5500,  unit: "Hour", type: "long" },
@@ -70,7 +67,6 @@ const EQUIPMENT = [
   { name: "진탕배양기-7",             code: "16CBF-16D3A3902",  fee: 160,   unit: "Hour", type: "long" },
   { name: "진탕배양기-8",             code: "16CBF-16D3A3903",  fee: 160,   unit: "Hour", type: "long" },
   { name: "무균대-7",                 code: "02A19-03D3A6701",  fee: 150,   unit: "Hour", type: "long" },
-  // 챔버 (날짜+마리수)
   { name: "항온항습동물사육챔버-3",   code: "08A19-09D3A2610",  fee: 0,     unit: "Cage", type: "cage" },
   { name: "항온항습동물사육챔버-4",   code: "20SCBF-22D3A7642", fee: 0,     unit: "Cage", type: "cage" },
 ];
@@ -97,90 +93,82 @@ const COMPANIES = [
   "㈜바이오메트릭스 테크놀로지"
 ];
 
-const C = {
-  bg:"#f0f4f8", card:"#ffffff", border:"#e2e8f0",
-  borderMid:"#cbd5e1",
-  primary:"#2563eb", primaryDark:"#1d4ed8",
-  text:"#0f172a", muted:"#64748b", faint:"#94a3b8",
-  success:"#16a34a", successDark:"#15803d",
-  inputBg:"#f8fafc",
-  long:"#0284c7", cage:"#7c3aed"
-};
+// ── 상수 ──
+const IS = {width:"100%",padding:"11px 14px",borderRadius:10,background:"#fff",border:"1.5px solid #94a3b8",color:"#0f172a",fontSize:13,marginBottom:14,outline:"none",boxSizing:"border-box"};
 
 const todayStr = () => new Date().toISOString().slice(0,10);
 const nowStr   = () => new Date().toTimeString().slice(0,5);
 const toKoDate = () => new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
 
 const diffMins = (sd,st,ed,et) => {
-  if (!sd||!st||!ed||!et) return 0;
-  const d = Math.round((new Date(`${ed}T${et}`) - new Date(`${sd}T${st}`)) / 60000);
-  return d > 0 ? d : 0;
+  if(!sd||!st||!ed||!et) return 0;
+  const d=Math.round((new Date(`${ed}T${et}`)- new Date(`${sd}T${st}`))/60000);
+  return d>0?d:0;
 };
 const diffDays = (sd,ed) => {
-  if (!sd||!ed) return 0;
-  const d = Math.ceil((new Date(ed) - new Date(sd)) / 86400000);
-  return d > 0 ? d : 0;
+  if(!sd||!ed) return 0;
+  const d=Math.ceil((new Date(ed)-new Date(sd))/86400000);
+  return d>0?d:0;
 };
-
-const calcFee = (eq, mins, days, mq, rq, qty) => {
-  if (!eq) return 0;
-  let base = 0;
-  if (eq.type==="cage") base = ((parseInt(mq)||0)*500 + (parseInt(rq)||0)*600) * (days||1);
-  else if (eq.unit==="L")   base = (parseInt(qty)||0) * eq.fee;
-  else if (eq.unit==="Day") base = (days||1) * eq.fee;
-  else                      base = Math.ceil((mins||0)/60) * eq.fee;
-  return Math.round(base * 1.1);
+const calcFee = (eq,mins,days,mq,rq,qty) => {
+  if(!eq) return 0;
+  let base=0;
+  if(eq.type==="cage") base=((parseInt(mq)||0)*500+(parseInt(rq)||0)*600)*(days||1);
+  else if(eq.unit==="L") base=(parseInt(qty)||0)*eq.fee;
+  else if(eq.unit==="Day") base=(days||1)*eq.fee;
+  else base=Math.ceil((mins||0)/60)*eq.fee;
+  return Math.round(base*1.1);
 };
+const typeLabel = t=>({short:"단기",long:"장기사용",cage:"동물사육챔버"}[t]||"");
 
-const typeColor  = t => ({short:C.border, long:C.long, cage:C.cage}[t]||C.border);
-const typeAccent = t => ({short:C.primary, long:"#38bdf8", cage:"#a78bfa"}[t]||C.primary);
-const typeLabel  = t => ({short:"단기", long:"장기사용", cage:"동물사육챔버"}[t]||"");
-
-const S = {
-  sel: {width:"100%",padding:"11px 12px",borderRadius:10,background:"#0f172a",border:"2px solid #334155",color:"#e2e8f0",fontSize:13,marginBottom:14,outline:"none"},
-  inp: {width:"100%",padding:"11px 12px",borderRadius:10,background:"#0f172a",border:"2px solid #334155",color:"#e2e8f0",fontSize:13,marginBottom:14,outline:"none"},
-};
-
+// ── 공통 컴포넌트 ──
+const Lbl = ({children}) => <div style={{color:"#334155",fontSize:12,fontWeight:600,marginBottom:6}}>{children}</div>;
+const NowBtn = ({onClick}) => <button onClick={onClick} style={{padding:"0 10px",height:42,borderRadius:8,background:"#eff6ff",border:"1.5px solid #93c5fd",color:"#1d4ed8",fontSize:11,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",marginBottom:14}}>지금</button>;
+const SecT = ({c}) => <div style={{color:"#0f172a",fontSize:13,fontWeight:700,marginBottom:14}}>{c}</div>;
+const GBtn = ({label,onClick}) => <button onClick={onClick} style={{flex:1,padding:"12px",background:"#f1f5f9",border:"1.5px solid #94a3b8",color:"#334155",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer"}}>{label}</button>;
+const PBtn = ({label,onClick,disabled,green}) => (
+  <button disabled={disabled} onClick={onClick} style={{flex:2,padding:"13px",borderRadius:10,background:disabled?"#e2e8f0":green?"#16a34a":"#2563eb",color:disabled?"#94a3b8":"#fff",border:"none",fontSize:14,fontWeight:600,cursor:disabled?"not-allowed":"pointer"}}>{label}</button>
+);
 const Row = ({l,v,highlight,sub}) => (
   <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-    <span style={{color:sub?"#475569":C.faint,fontSize:sub?11:13}}>{l}</span>
-    <span style={{color:highlight?C.primary:C.text,fontWeight:highlight?700:500,fontSize:sub?11:13}}>{v}</span>
+    <span style={{color:sub?"#94a3b8":"#64748b",fontSize:sub?11:13}}>{l}</span>
+    <span style={{color:highlight?"#2563eb":"#0f172a",fontWeight:highlight?600:500,fontSize:sub?11:13}}>{v}</span>
   </div>
 );
-const Div = () => <div style={{borderTop:`1px solid ${C.border}`,margin:"8px 0"}}/>;
-const SecT = ({c}) => <div style={{color:"#7dd3fc",fontSize:12,fontWeight:700,letterSpacing:1,marginBottom:14}}>{c}</div>;
-const GBtn = ({label,onClick}) => <button onClick={onClick} style={{flex:1,padding:12,background:"none",border:`1px solid ${C.border}`,color:C.muted,borderRadius:12,fontSize:13,cursor:"pointer"}}>{label}</button>;
-const PBtn = ({label,onClick,disabled,green}) => (
-  <button disabled={disabled} onClick={onClick} style={{flex:2,padding:14,borderRadius:12,background:disabled?"#334155":green?"linear-gradient(135deg,#059669,#10b981)":`linear-gradient(135deg,${C.primaryDark},${C.primary})`,color:disabled?C.faint:"#fff",border:"none",fontSize:15,fontWeight:700,cursor:disabled?"not-allowed":"pointer"}}>{label}</button>
-);
-
+const Div = () => <div style={{borderTop:"1px solid #e2e8f0",margin:"8px 0"}}/>;
 const InfoBox = ({msg}) => (
-  <div style={{background:"#1e1b4b",border:"1px solid #4338ca",borderRadius:10,padding:"10px 14px",marginBottom:14,color:"#c7d2fe",fontSize:12,lineHeight:1.6}}>{msg}</div>
+  <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"10px 14px",marginBottom:14,color:"#1d4ed8",fontSize:12,lineHeight:1.6,whiteSpace:"pre-line"}}>{msg}</div>
+);
+const FeeBox = ({rows,fee}) => (
+  <div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}>
+    {rows.map(([l,v])=><Row key={l} l={l} v={v} sub/>)}
+    <Div/><Row l="장비 수수료(부가세 포함)" v={`${fee.toLocaleString()}원`} highlight/>
+  </div>
 );
 
 function CompanyWorker({co,setCo,cu,setCu,wo,setWo}){
   return(<>
-    <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>업체명</div>
-    <select value={co} onChange={e=>setCo(e.target.value)} style={S.sel}>
+    <Lbl>업체명</Lbl>
+    <select value={co} onChange={e=>setCo(e.target.value)} style={IS}>
       <option value="">선택하세요</option>
       {COMPANIES.map(c=><option key={c} value={c}>{c}</option>)}
     </select>
-    {co==="직접입력"&&<input value={cu} onChange={e=>setCu(e.target.value)} placeholder="업체명 입력" style={S.inp}/>}
-    <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>담당자명</div>
-    <input value={wo} onChange={e=>setWo(e.target.value)} placeholder="성함을 입력하세요" style={S.inp}/>
+    {co==="직접입력"&&<input value={cu} onChange={e=>setCu(e.target.value)} placeholder="업체명 입력" style={IS}/>}
+    <Lbl>담당자명</Lbl>
+    <input value={wo} onChange={e=>setWo(e.target.value)} placeholder="성함을 입력하세요" style={IS}/>
   </>);
 }
 
 function EqBadge({eq}){
-  const typeColors={short:["#eff6ff","#2563eb","#bfdbfe"],long:["#f0f9ff","#0284c7","#bae6fd"],cage:["#f5f3ff","#7c3aed","#ddd6fe"]};
-  const [bg,tc,bc]=typeColors[eq.type]||typeColors.short;
+  const cfg={short:["#eff6ff","#2563eb","#bfdbfe"],long:["#f0f9ff","#0284c7","#bae6fd"],cage:["#f5f3ff","#7c3aed","#ddd6fe"]};
+  const [bg,tc,bc]=cfg[eq.type]||cfg.short;
   return(
     <div style={{background:bg,border:`1px solid ${bc}`,borderRadius:12,padding:"12px 16px",marginBottom:20,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
       <div>
-        <div style={{color:tc,fontSize:11,fontWeight:600,marginBottom:2,letterSpacing:"0.3px"}}>{typeLabel(eq.type).toUpperCase()}</div>
+        <div style={{color:tc,fontSize:11,fontWeight:600,marginBottom:2}}>{typeLabel(eq.type).toUpperCase()}</div>
         <div style={{color:"#0f172a",fontWeight:600,fontSize:14}}>{eq.name}</div>
       </div>
-      <div style={{color:tc,fontSize:12,fontWeight:600,textAlign:"right"}}>
+      <div style={{color:tc,fontSize:12,fontWeight:600}}>
         {eq.type==="cage"?"M:500원 R:600원":eq.unit==="L"?`${eq.fee.toLocaleString()}원/L`:`${eq.fee.toLocaleString()}원/H`}
       </div>
     </div>
@@ -204,13 +192,13 @@ function DonePage({onBack,rows}){
 // ── QR ──
 function QRPage({onBack}){
   const ref=React.useRef(null);
-  React.useEffect(()=>{if(ref.current){ref.current.innerHTML="";new QRCode(ref.current,{text:KIOSK_URL,width:200,height:200,colorDark:"#0ea5e9",colorLight:"#1e293b"});}},[]);
+  React.useEffect(()=>{if(ref.current){ref.current.innerHTML="";new QRCode(ref.current,{text:KIOSK_URL,width:200,height:200,colorDark:"#2563eb",colorLight:"#ffffff"});}},[]);
   return(
     <div style={{textAlign:"center"}}>
       <SecT c="QR 코드"/>
-      <div style={{background:C.card,borderRadius:16,padding:20,display:"inline-block",marginBottom:16}}><div ref={ref}/></div>
-      <div style={{color:C.muted,fontSize:12,marginBottom:4}}>스마트폰으로 스캔하면 키오스크로 접속됩니다</div>
-      <div style={{color:C.faint,fontSize:11,marginBottom:24,wordBreak:"break-all"}}>{KIOSK_URL}</div>
+      <div style={{background:"#f8fafc",borderRadius:16,padding:20,display:"inline-block",marginBottom:16,border:"1px solid #e2e8f0"}}><div ref={ref}/></div>
+      <div style={{color:"#64748b",fontSize:12,marginBottom:4}}>스마트폰으로 스캔하면 키오스크로 접속됩니다</div>
+      <div style={{color:"#94a3b8",fontSize:11,marginBottom:24,wordBreak:"break-all"}}>{KIOSK_URL}</div>
       <GBtn label="← 뒤로" onClick={onBack}/>
     </div>
   );
@@ -221,34 +209,26 @@ function ReservationPage({onBack}){
   const [ec,setEc]=React.useState("");
   const [co,setCo]=React.useState(""); const [cu,setCu]=React.useState("");
   const [wo,setWo]=React.useState("");
-  const maxDate = new Date(Date.now()+21*86400000).toISOString().slice(0,10);
   const [sdt,setSdt]=React.useState(todayStr());
   const [edt,setEdt]=React.useState("");
   const [done,setDone]=React.useState(false);
   const [reservations,setReservations]=React.useState([]);
   const [loading,setLoading]=React.useState(true);
   const [calMonth,setCalMonth]=React.useState(new Date());
+  const maxDate=new Date(Date.now()+21*86400000).toISOString().slice(0,10);
 
   React.useEffect(()=>{
     if(!ec) return;
-    setLoading(true);
-    setReservations([]);
+    setLoading(true); setReservations([]);
     const eqName=EQUIPMENT.find(e=>e.code===ec)?.name||"";
     const cbName="cb_"+Date.now();
     const script=document.createElement("script");
     script.src=SCRIPT_URL+"?action=getReservations&장비명="+encodeURIComponent(eqName)+"&callback="+cbName;
     window[cbName]=(data)=>{
-      console.log("예약현황:", data);
       if(data.result==="success") setReservations(data.data||[]);
-      delete window[cbName];
-      document.body.removeChild(script);
-      setLoading(false);
+      delete window[cbName]; document.body.removeChild(script); setLoading(false);
     };
-    script.onerror=(e)=>{ 
-      console.log("스크립트 오류:", e);
-      setLoading(false); 
-      delete window[cbName]; 
-    };
+    script.onerror=()=>{setLoading(false);delete window[cbName];};
     document.body.appendChild(script);
   },[ec]);
 
@@ -257,26 +237,22 @@ function ReservationPage({onBack}){
   const days=diffDays(sdt,edt)||1;
   const valid=cn&&wo&&ec&&sdt&&edt;
 
-  // 예약된 날짜 범위 계산
-  const bookedDates = React.useMemo(()=>{
+  const bookedDates=React.useMemo(()=>{
     const set=new Set();
     reservations.forEach(r=>{
       if(!r.예약시작일||!r.예약종료일) return;
-      // 장비 선택 안 됐거나 같은 장비면 표시
-      if(ec && eq && r.장비명 !== eq.name) return;
       let cur=new Date(r.예약시작일);
       const end=new Date(r.예약종료일);
-      while(cur<=end){ set.add(cur.toISOString().slice(0,10)); cur.setDate(cur.getDate()+1); }
+      while(cur<=end){set.add(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
     });
     return set;
-  },[reservations,ec]);
+  },[reservations]);
 
   const isBooked=d=>bookedDates.has(d);
-  const isInMyRange=d=>sdt&&edt&&d>=sdt&&d<=edt;
+  const isInRange=d=>sdt&&edt&&d>=sdt&&d<=edt&&!isBooked(d);
 
-  // 달력 렌더
-  const renderCalendar=()=>{
-    const year=calMonth.getFullYear(), month=calMonth.getMonth();
+  const renderCal=()=>{
+    const year=calMonth.getFullYear(),month=calMonth.getMonth();
     const firstDay=new Date(year,month,1).getDay();
     const daysInMonth=new Date(year,month+1,0).getDate();
     const today=todayStr();
@@ -284,28 +260,19 @@ function ReservationPage({onBack}){
     for(let i=0;i<firstDay;i++) cells.push(<div key={`e${i}`}/>);
     for(let d=1;d<=daysInMonth;d++){
       const ds=`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-      const past=ds<today, over=ds>maxDate;
-      const booked=isBooked(ds);
-      // 선택 범위 내에 예약된 날이 있으면 범위 표시 안 함
-      const mine=isInMyRange(ds)&&!booked;
+      const past=ds<today,over=ds>maxDate,booked=isBooked(ds),mine=isInRange(ds),isStart=ds===sdt&&!edt;
       const disabled=past||over||booked;
-      let bg="transparent", color=C.text, border="none";
-      if(booked) { bg="#991b1b"; color="#fca5a5"; }
-      else if(ds===sdt&&!edt) { bg="#0ea5e9"; color="#fff"; border="2px solid #38bdf8"; }
-      else if(mine) { bg="#1d4ed8"; color="#fff"; }
-      else if(past||over) { color=C.faint; }
+      let bg="transparent",color=past||over?"#cbd5e1":"#0f172a",fw="400";
+      if(booked){bg="#fee2e2";color="#ef4444";}
+      else if(mine||isStart){bg="#dbeafe";color="#1d4ed8";fw="600";}
       cells.push(
         <div key={ds} onClick={()=>{
           if(disabled) return;
-          if(!sdt||!edt){ 
-            if(!sdt){ setSdt(ds); }
-            else if(!edt){ ds<sdt?setSdt(ds):setEdt(ds); }
-          } else { setSdt(ds); setEdt(""); }
-        }} style={{
-          textAlign:"center",padding:"6px 2px",borderRadius:6,
-          background:bg,color,fontSize:13,cursor:disabled?"not-allowed":"pointer",
-          opacity:disabled?0.4:1,border,fontWeight:mine?"700":"400"
-        }}>{d}</div>
+          if(!sdt||!edt){if(!sdt){setSdt(ds);}else if(!edt){ds<sdt?setSdt(ds):setEdt(ds);}}
+          else{setSdt(ds);setEdt("");}
+        }} style={{textAlign:"center",padding:"6px 2px",borderRadius:6,background:bg,color,fontSize:13,cursor:disabled?"not-allowed":"pointer",opacity:disabled?0.4:1,fontWeight:fw}}>
+          {d}
+        </div>
       );
     }
     return cells;
@@ -323,61 +290,39 @@ function ReservationPage({onBack}){
     <div>
       <SecT c="📅 고속액체크로마토그래프 장비예약"/>
       <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo}/>
-      <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>장비 선택</div>
-      <select value={ec} onChange={e=>{setEc(e.target.value);setSdt(todayStr());setEdt("");}} style={S.sel}>
+      <Lbl>장비 선택</Lbl>
+      <select value={ec} onChange={e=>{setEc(e.target.value);setSdt(todayStr());setEdt("");}} style={IS}>
         <option value="">선택하세요</option>
         {EQUIPMENT.filter(e=>e.name.includes("고속액체크로마토그래프")).map(e=><option key={e.code} value={e.code}>{e.name}</option>)}
       </select>
-
       {ec&&(
         <div>
-          {/* 달력 */}
-          <div style={{background:C.inputBg,borderRadius:12,padding:14,marginBottom:14,border:`1px solid ${C.border}`}}>
-            {/* 달력 헤더 */}
+          <div style={{background:"#f8fafc",borderRadius:12,padding:14,marginBottom:14,border:"1px solid #e2e8f0"}}>
             <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-              <button onClick={()=>setCalMonth(new Date(calMonth.getFullYear(),calMonth.getMonth()-1,1))} style={{background:"none",border:"none",color:C.muted,fontSize:18,cursor:"pointer"}}>‹</button>
-              <span style={{color:C.text,fontWeight:600,fontSize:14}}>{calMonth.getFullYear()}년 {calMonth.getMonth()+1}월</span>
-              <button onClick={()=>setCalMonth(new Date(calMonth.getFullYear(),calMonth.getMonth()+1,1))} style={{background:"none",border:"none",color:C.muted,fontSize:18,cursor:"pointer"}}>›</button>
+              <button onClick={()=>setCalMonth(new Date(calMonth.getFullYear(),calMonth.getMonth()-1,1))} style={{background:"none",border:"none",color:"#64748b",fontSize:20,cursor:"pointer",padding:"0 4px"}}>‹</button>
+              <span style={{color:"#0f172a",fontWeight:600,fontSize:14}}>{calMonth.getFullYear()}년 {calMonth.getMonth()+1}월</span>
+              <button onClick={()=>setCalMonth(new Date(calMonth.getFullYear(),calMonth.getMonth()+1,1))} style={{background:"none",border:"none",color:"#64748b",fontSize:20,cursor:"pointer",padding:"0 4px"}}>›</button>
             </div>
-            {/* 요일 */}
             <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:4}}>
-              {["일","월","화","수","목","금","토"].map(d=><div key={d} style={{textAlign:"center",color:C.faint,fontSize:11}}>{d}</div>)}
+              {["일","월","화","수","목","금","토"].map(d=><div key={d} style={{textAlign:"center",color:"#94a3b8",fontSize:11}}>{d}</div>)}
             </div>
-            {/* 날짜 */}
             <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}}>
-              {loading?<div style={{gridColumn:"1/-1",textAlign:"center",color:C.muted,padding:10,fontSize:12}}>예약 현황 불러오는 중...</div>:renderCalendar()}
+              {loading?<div style={{gridColumn:"1/-1",textAlign:"center",color:"#94a3b8",padding:10,fontSize:12}}>예약 현황 불러오는 중...</div>:renderCal()}
             </div>
-            {/* 범례 */}
             <div style={{display:"flex",gap:12,marginTop:10}}>
-              <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,background:"#991b1b"}}/><span style={{color:C.faint,fontSize:10}}>예약됨</span></div>
-              <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,background:"#1d4ed8"}}/><span style={{color:C.faint,fontSize:10}}>내 선택</span></div>
+              <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,background:"#fee2e2",border:"1px solid #fca5a5"}}/><span style={{color:"#64748b",fontSize:10}}>예약됨</span></div>
+              <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,background:"#dbeafe"}}/><span style={{color:"#64748b",fontSize:10}}>내 선택</span></div>
             </div>
           </div>
-
-          {/* 안내 */}
-          <div style={{color:C.faint,fontSize:11,marginBottom:12,textAlign:"center"}}>
-            달력에서 시작일 → 종료일 순으로 탭하거나 직접 입력하세요
-          </div>
-
+          <div style={{color:"#94a3b8",fontSize:11,marginBottom:12,textAlign:"center"}}>달력에서 시작일 → 종료일 순으로 탭하거나 직접 입력하세요</div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <div>
-              <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>예약 시작일 <span style={{color:"#f87171"}}>*</span></div>
-              <input type="date" value={sdt} onChange={e=>{setSdt(e.target.value);setEdt("");}} min={todayStr()} max={maxDate} style={S.inp}/>
-            </div>
-            <div>
-              <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>예약 종료일 <span style={{color:"#f87171"}}>*</span></div>
-              <input type="date" value={edt} onChange={e=>setEdt(e.target.value)} min={sdt||todayStr()} max={maxDate} style={S.inp}/>
-            </div>
+            <div><Lbl>예약 시작일 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sdt} onChange={e=>{setSdt(e.target.value);setEdt("");}} min={todayStr()} max={maxDate} style={IS}/></div>
+            <div><Lbl>예약 종료일 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={edt} onChange={e=>setEdt(e.target.value)} min={sdt||todayStr()} max={maxDate} style={IS}/></div>
           </div>
-
-          {sdt&&edt&&<div style={{background:C.inputBg,borderRadius:12,padding:"14px 16px",marginBottom:20,border:"1px solid #1e3a5f"}}>
-            <Row l="예약 기간" v={`${sdt} ~ ${edt}`} sub/>
-            <Row l="예약 일수" v={`${days}일`} sub/>
-          </div>}
+          {sdt&&edt&&<FeeBox rows={[["예약 기간",`${sdt} ~ ${edt}`],["예약 일수",`${days}일`]]} fee={0}/>}
         </div>
       )}
-
-      <div style={{display:"flex",gap:8}}><GBtn label="← 뒤로" onClick={onBack}/><PBtn label="예약하기" onClick={submit} disabled={!valid}/></div>
+      <div style={{display:"flex",gap:8,marginTop:16}}><GBtn label="← 뒤로" onClick={onBack}/><PBtn label="예약하기" onClick={submit} disabled={!valid}/></div>
     </div>
   );
 }
@@ -389,11 +334,8 @@ function App(){
   const [eq,setEq]=React.useState(null);
   const [co,setCo]=React.useState(""); const [cu,setCu]=React.useState("");
   const [wo,setWo]=React.useState("");
-  // 단기
-  const [sST,setSST]=React.useState(""); // startTime
-  const [eST,setEST]=React.useState(""); // endTime
+  const [sST,setSST]=React.useState(""); const [eST,setEST]=React.useState("");
   const [qty,setQty]=React.useState("");
-  // 장기/챔버 공통
   const [sDate,setSDate]=React.useState(todayStr());
   const [sTime,setSTime]=React.useState("");
   const [eDate,setEDate]=React.useState("");
@@ -403,51 +345,39 @@ function App(){
   const [records,setRecords]=React.useState([]);
 
   const cn=co==="직접입력"?cu:co;
-  const isL=eq?.unit==="L";
-  const isDay=eq?.unit==="Day";
-
-  // 단기 계산
+  const isL=eq?.unit==="L"; const isDay=eq?.unit==="Day";
   const shMins=()=>diffMins(todayStr(),sST,todayStr(),eST);
   const shFee=()=>calcFee(eq,shMins(),1,0,0,qty);
   const shValid=cn&&wo&&eq&&(isL?parseInt(qty)>0:isDay?true:shMins()>0);
-
-  // 장기 계산 - 종료 미정 가능
   const lgMins=()=>diffMins(sDate,sTime,eDate||sDate,eTime||"23:59");
   const lgFee=()=>eDate&&eTime?calcFee(eq,lgMins(),1,0,0,0):0;
   const lgValid=cn&&wo&&eq&&sDate&&sTime;
-
-  // 챔버 계산 - 종료 미정 가능
   const cgDays=()=>eDate?Math.max(diffDays(sDate,eDate),1):null;
   const m=parseInt(mouseQ)||0, r=parseInt(ratQ)||0;
   const cgFee=()=>eDate?Math.round((m*500+r*600)*(cgDays()||1)*1.1):0;
   const cgValid=cn&&wo&&eq&&sDate&&(m+r)>0;
-
   const filtered=EQUIPMENT.filter(e=>e.name.includes(eqSearch));
+  const last=records[records.length-1];
 
   const post=async(record)=>{
-    setRecords(p=>[...p,record]);
-    setStep("sending");
+    setRecords(p=>[...p,record]); setStep("sending");
     try{await fetch(SCRIPT_URL+"?"+new URLSearchParams(record).toString(),{method:"GET",mode:"no-cors"});}catch(e){}
     setStep("done");
   };
-
   const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작:sST,사용종료:eST,사용시간_분:shMins(),단가:eq.fee,수수료:shFee(),구분:"이용"});
-
   const submitLong=()=>post({연도:new Date(sDate).getFullYear(),날짜:new Date(sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:sDate,사용시작시간:sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:eDate&&eTime?lgMins():"미정",단가:eq.fee,수수료:eDate&&eTime?lgFee():"미정",구분:"이용"});
-
   const submitCage=()=>post({연도:new Date(sDate).getFullYear(),날짜:new Date(sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,장비명:eq.name,장비코드:eq.code,부과단위:"Cage/Day",사용시작일:sDate,사용종료일:eDate||"미정",사용일수:eDate?cgDays():"미정",마우스수:m,랫수:r,단가_마우스:500,단가_랫:600,수수료:eDate?cgFee():"미정",구분:"이용"});
-
   const reset=()=>{setStep("home");setEq(null);setEqSearch("");setCo("");setCu("");setWo("");setSST("");setEST("");setQty("");setSDate(todayStr());setSTime("");setEDate("");setETime("");setMouseQ("");setRatQ("");};
-
-  const last=records[records.length-1];
 
   return(
     <div style={{minHeight:"100vh",background:"#f0f4f8",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:16}}>
       <div style={{width:"100%",maxWidth:520,background:"#fff",borderRadius:20,boxShadow:"0 4px 24px rgba(0,0,0,0.08)",overflow:"hidden",border:"1px solid #e2e8f0"}}>
+
+        {/* 헤더 */}
         <div style={{background:"#fff",padding:"20px 24px 16px",borderBottom:"1px solid #e2e8f0"}}>
-          <img src="cbf_logo.png" alt="춘천바이오산업진흥원" style={{height:32,display:"block",marginBottom:14}}/>
-          <div style={{fontSize:18,fontWeight:700,color:"#0f172a",letterSpacing:"-0.3px"}}>공유장비 이용 기록 시스템</div>
-          <div style={{fontSize:12,color:"#94a3b8",marginTop:4}}>{toKoDate()}</div>
+          <img src="cbf_logo.png" alt="춘천바이오산업진흥원" style={{height:32,display:"block",marginBottom:12}}/>
+          <div style={{fontSize:17,fontWeight:700,color:"#0f172a"}}>공유장비 이용 기록 시스템</div>
+          <div style={{fontSize:12,color:"#94a3b8",marginTop:3}}>{toKoDate()}</div>
         </div>
 
         <div style={{padding:"24px 24px 28px"}}>
@@ -458,9 +388,9 @@ function App(){
           {step==="home"&&(
             <div style={{textAlign:"center"}}>
               <div style={{fontSize:48,marginBottom:12}}>🔬</div>
-              <div style={{color:"#0f172a",fontSize:16,fontWeight:600,marginBottom:6,letterSpacing:"-0.2px"}}>장비 이용을 시작하시겠습니까?</div>
+              <div style={{color:"#0f172a",fontSize:16,fontWeight:600,marginBottom:6}}>장비 이용을 시작하시겠습니까?</div>
               <div style={{color:"#64748b",fontSize:13,marginBottom:24}}>아래 버튼을 눌러 이용 기록을 입력해주세요</div>
-              <button onClick={()=>setStep("equipment")} style={{width:"100%",padding:"14px",background:"#2563eb",color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:600,cursor:"pointer",marginBottom:8,letterSpacing:"-0.2px"}}>이용 기록 입력</button>
+              <button onClick={()=>setStep("equipment")} style={{width:"100%",padding:"14px",background:"#2563eb",color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:600,cursor:"pointer",marginBottom:8}}>이용 기록 입력</button>
               <button onClick={()=>setStep("reservation")} style={{width:"100%",padding:"13px",background:"#eff6ff",color:"#1d4ed8",border:"1px solid #bfdbfe",borderRadius:10,fontSize:14,fontWeight:600,cursor:"pointer",marginBottom:16}}>📅 고속액체크로마토그래프 장비예약</button>
               <div style={{display:"flex",gap:8,marginBottom:20}}>
                 {records.length>0&&<button onClick={()=>setStep("records")} style={{flex:1,padding:10,background:"#f8fafc",border:"1px solid #e2e8f0",color:"#64748b",borderRadius:8,cursor:"pointer",fontSize:12}}>오늘 기록 ({records.length}건)</button>}
@@ -484,21 +414,21 @@ function App(){
           {step==="equipment"&&(
             <div>
               <SecT c="① 장비를 선택하세요"/>
-              <input value={eqSearch} onChange={e=>setEqSearch(e.target.value)} placeholder="🔍 장비명 검색" style={{...S.inp,marginBottom:12}}/>
+              <input value={eqSearch} onChange={e=>setEqSearch(e.target.value)} placeholder="🔍 장비명 검색" style={{...IS,marginBottom:12}}/>
               <div style={{maxHeight:360,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
                 {filtered.map(e=>(
-                  <button key={e.code} onClick={()=>{setEq(e);setStep("form");}} style={{padding:"12px 10px",borderRadius:12,border:`2px solid ${typeColor(e.type)}`,background:C.inputBg,color:C.text,cursor:"pointer",textAlign:"left"}}>
-                    <div style={{fontSize:12,fontWeight:600,marginBottom:3,lineHeight:1.3}}>{e.name}</div>
-                    <div style={{fontSize:10,color:typeAccent(e.type)}}>{e.type==="cage"?"마우스/랫 일수":e.type==="long"?"장기사용":e.unit==="L"?`${e.fee.toLocaleString()}원/L`:`${e.fee.toLocaleString()}원/H`}</div>
+                  <button key={e.code} onClick={()=>{setEq(e);setStep("form");}} style={{padding:"12px 10px",borderRadius:12,border:`1.5px solid ${e.type==="cage"?"#ddd6fe":e.type==="long"?"#bae6fd":"#e2e8f0"}`,background:"#fff",color:"#0f172a",cursor:"pointer",textAlign:"left"}}>
+                    <div style={{fontSize:12,fontWeight:600,marginBottom:3,lineHeight:1.3,color:"#0f172a"}}>{e.name}</div>
+                    <div style={{fontSize:10,color:e.type==="cage"?"#7c3aed":e.type==="long"?"#0284c7":"#2563eb"}}>{e.type==="cage"?"마우스/랫 일수":e.type==="long"?"장기사용":e.unit==="L"?`${e.fee.toLocaleString()}원/L`:`${e.fee.toLocaleString()}원/H`}</div>
                   </button>
                 ))}
-                {filtered.length===0&&<div style={{color:C.muted,fontSize:13,padding:"20px 0",gridColumn:"1/-1",textAlign:"center"}}>검색 결과 없음</div>}
+                {filtered.length===0&&<div style={{color:"#94a3b8",fontSize:13,padding:"20px 0",gridColumn:"1/-1",textAlign:"center"}}>검색 결과 없음</div>}
               </div>
               <div style={{display:"flex",gap:12,marginBottom:12}}>
-                {[["short","단기"],["long","장기"],["cage","동물챔버"]].map(([t,l])=>(
+                {[["short","#e2e8f0","단기"],["long","#bae6fd","장기"],["cage","#ddd6fe","동물챔버"]].map(([t,bc,l])=>(
                   <div key={t} style={{display:"flex",alignItems:"center",gap:4}}>
-                    <div style={{width:10,height:10,borderRadius:2,border:`2px solid ${typeColor(t)}`,background:"transparent"}}/>
-                    <span style={{color:C.faint,fontSize:11}}>{l}</span>
+                    <div style={{width:10,height:10,borderRadius:2,border:`1.5px solid ${bc}`}}/>
+                    <span style={{color:"#64748b",fontSize:11}}>{l}</span>
                   </div>
                 ))}
               </div>
@@ -512,21 +442,22 @@ function App(){
               <EqBadge eq={eq}/>
               <SecT c="② 이용 정보 입력"/>
               <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo}/>
-              {!isL&&(
+              {(isHour||isDay)&&(
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                   {[{l:"시작 시간",v:sST,s:setSST},{l:"종료 시간",v:eST,s:setEST}].map(({l,v,s})=>(
-                    <div key={l}><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>{l}</div>
-                    <div style={{display:"flex",gap:6}}><input type="time" value={v} onChange={e=>s(e.target.value)} style={{...S.inp,marginBottom:0,flex:1}}/><button onClick={()=>s(nowStr())} style={{padding:"0 8px",borderRadius:8,background:"#1e3a5f",border:"none",color:"#7dd3fc",fontSize:11,cursor:"pointer",marginBottom:14}}>지금</button></div></div>
+                    <div key={l}>
+                      <Lbl>{l}</Lbl>
+                      <div style={{display:"flex",gap:6}}>
+                        <input type="time" value={v} onChange={e=>s(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/>
+                        <NowBtn onClick={()=>s(nowStr())}/>
+                      </div>
+                    </div>
                   ))}
                 </div>
               )}
-              {isL&&<><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>사용량 (리터)</div><input type="number" min="1" value={qty} onChange={e=>setQty(e.target.value)} placeholder="리터 수" style={S.inp}/></>}
-              {shValid&&<div style={{background:C.inputBg,borderRadius:12,padding:"14px 16px",marginBottom:20,border:"1px solid #1e3a5f"}}>
-                {!isL&&<Row l="실제 사용시간" v={`${Math.floor(shMins()/60)}시간 ${shMins()%60}분`} sub/>}
-                {isL&&<Row l="사용량" v={`${qty}L`} sub/>}
-                <Div/><Row l="장비 수수료(부가세 포함)" v={`${shFee().toLocaleString()}원`} highlight/>
-              </div>}
-              <div style={{display:"flex",gap:8}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!shValid}/></div>
+              {isL&&<><Lbl>사용량 (리터)</Lbl><input type="number" min="1" value={qty} onChange={e=>setQty(e.target.value)} placeholder="리터 수" style={IS}/></>}
+              {shValid&&<FeeBox rows={!isL?[["실제 사용시간",`${Math.floor(shMins()/60)}시간 ${shMins()%60}분`]]:[["사용량",`${qty}L`]]} fee={shFee()}/>}
+              <div style={{display:"flex",gap:8,marginTop:16}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!shValid}/></div>
             </div>
           )}
 
@@ -536,24 +467,22 @@ function App(){
               <EqBadge eq={eq}/>
               <SecT c="② 이용 정보 입력"/>
               <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo}/>
-              <InfoBox msg={"📌 장기 사용 장비입니다.\n• 시작 날짜/시간은 반드시 입력해주세요.\n• 종료 날짜/시간은 사용 종료 후 입력하거나 지금 입력할 수 있습니다.\n• 종료일 미입력 시 '미정'으로 저장되며, 사용 종료 후 다시 기록해주세요."}/>
+              <InfoBox msg={"📌 장기 사용 장비입니다.\n• 시작 날짜/시간은 반드시 입력해주세요.\n• 종료 날짜/시간은 사용 종료 후 입력할 수 있습니다.\n• 종료일 미입력 시 '미정'으로 저장됩니다."}/>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                <div><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>시작 날짜 <span style={{color:"#f87171"}}>*</span></div><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={S.inp}/></div>
-                <div><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>시작 시간 <span style={{color:"#f87171"}}>*</span></div>
-                  <div style={{display:"flex",gap:6}}><input type="time" value={sTime} onChange={e=>setSTime(e.target.value)} style={{...S.inp,marginBottom:0,flex:1}}/><button onClick={()=>setSTime(nowStr())} style={{padding:"0 8px",borderRadius:8,background:"#1e3a5f",border:"none",color:"#7dd3fc",fontSize:11,cursor:"pointer",marginBottom:14}}>지금</button></div>
+                <div><Lbl>시작 날짜 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={IS}/></div>
+                <div><Lbl>시작 시간 <span style={{color:"#ef4444"}}>*</span></Lbl>
+                  <div style={{display:"flex",gap:6}}><input type="time" value={sTime} onChange={e=>setSTime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setSTime(nowStr())}/></div>
                 </div>
-                <div><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>종료 날짜 <span style={{color:C.faint}}>(선택)</span></div><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={S.inp}/></div>
-                <div><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>종료 시간 <span style={{color:C.faint}}>(선택)</span></div>
-                  <div style={{display:"flex",gap:6}}><input type="time" value={eTime} onChange={e=>setETime(e.target.value)} style={{...S.inp,marginBottom:0,flex:1}}/><button onClick={()=>setETime(nowStr())} style={{padding:"0 8px",borderRadius:8,background:"#1e3a5f",border:"none",color:"#7dd3fc",fontSize:11,cursor:"pointer",marginBottom:14}}>지금</button></div>
+                <div><Lbl>종료 날짜 <span style={{color:"#94a3b8",fontWeight:400}}>(선택)</span></Lbl><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={IS}/></div>
+                <div><Lbl>종료 시간 <span style={{color:"#94a3b8",fontWeight:400}}>(선택)</span></Lbl>
+                  <div style={{display:"flex",gap:6}}><input type="time" value={eTime} onChange={e=>setETime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setETime(nowStr())}/></div>
                 </div>
               </div>
-              {lgValid&&<div style={{background:C.inputBg,borderRadius:12,padding:"14px 16px",marginBottom:20,border:"1px solid #1e3a5f"}}>
-                {eDate&&eTime
-                  ?<><Row l="실제 사용시간" v={`${Math.floor(lgMins()/60)}시간 ${lgMins()%60}분`} sub/><Div/><Row l="장비 수수료(부가세 포함)" v={`${lgFee().toLocaleString()}원`} highlight/></>
-                  :<Row l="수수료" v="종료 시간 입력 후 확정" highlight/>
-                }
+              {lgValid&&<div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}>
+                {eDate&&eTime?<><Row l="실제 사용시간" v={`${Math.floor(lgMins()/60)}시간 ${lgMins()%60}분`} sub/><Div/><Row l="장비 수수료(부가세 포함)" v={`${lgFee().toLocaleString()}원`} highlight/></>
+                  :<Row l="수수료" v="종료 시간 입력 후 확정" highlight/>}
               </div>}
-              <div style={{display:"flex",gap:8}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!lgValid}/></div>
+              <div style={{display:"flex",gap:8,marginTop:16}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!lgValid}/></div>
             </div>
           )}
 
@@ -563,22 +492,20 @@ function App(){
               <EqBadge eq={eq}/>
               <SecT c="② 이용 정보 입력"/>
               <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo}/>
-              <InfoBox msg={"📌 동물사육챔버입니다.\n• 시작 날짜와 마리 수는 반드시 입력해주세요.\n• 종료 날짜는 사용 종료 후 입력하거나 지금 입력할 수 있습니다.\n• 종료일 미입력 시 '미정'으로 저장되며, 종료 후 다시 기록해주세요."}/>
+              <InfoBox msg={"📌 동물사육챔버입니다.\n• 시작 날짜와 마리 수는 반드시 입력해주세요.\n• 종료 날짜는 사용 종료 후 입력할 수 있습니다."}/>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                <div><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>시작 날짜 <span style={{color:"#f87171"}}>*</span></div><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={S.inp}/></div>
-                <div><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>종료 날짜 <span style={{color:C.faint}}>(선택)</span></div><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={S.inp}/></div>
+                <div><Lbl>시작 날짜 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={IS}/></div>
+                <div><Lbl>종료 날짜 <span style={{color:"#94a3b8",fontWeight:400}}>(선택)</span></Lbl><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={IS}/></div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                <div><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>마우스 수 <span style={{color:C.faint,fontSize:10}}>(500원/마리/일)</span></div><input type="number" min="0" value={mouseQ} onChange={e=>setMouseQ(e.target.value)} placeholder="0" style={S.inp}/></div>
-                <div><div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>랫 수 <span style={{color:C.faint,fontSize:10}}>(600원/마리/일)</span></div><input type="number" min="0" value={ratQ} onChange={e=>setRatQ(e.target.value)} placeholder="0" style={S.inp}/></div>
+                <div><Lbl>마우스 수 <span style={{color:"#94a3b8",fontWeight:400,fontSize:10}}>(500원/마리/일)</span></Lbl><input type="number" min="0" value={mouseQ} onChange={e=>setMouseQ(e.target.value)} placeholder="0" style={IS}/></div>
+                <div><Lbl>랫 수 <span style={{color:"#94a3b8",fontWeight:400,fontSize:10}}>(600원/마리/일)</span></Lbl><input type="number" min="0" value={ratQ} onChange={e=>setRatQ(e.target.value)} placeholder="0" style={IS}/></div>
               </div>
-              {cgValid&&<div style={{background:C.inputBg,borderRadius:12,padding:"14px 16px",marginBottom:20,border:"1px solid #1e3a5f"}}>
-                {eDate
-                  ?<><Row l="사용일수" v={`${cgDays()}일`} sub/><Row l="마우스 비용" v={`${(m*500*cgDays()).toLocaleString()}원`} sub/><Row l="랫 비용" v={`${(r*600*cgDays()).toLocaleString()}원`} sub/><Div/><Row l="장비 수수료(부가세 포함)" v={`${cgFee().toLocaleString()}원`} highlight/></>
-                  :<Row l="수수료" v="종료 날짜 입력 후 확정" highlight/>
-                }
+              {cgValid&&<div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}>
+                {eDate?<><Row l="사용일수" v={`${cgDays()}일`} sub/><Row l="마우스 비용" v={`${(m*500*cgDays()).toLocaleString()}원`} sub/><Row l="랫 비용" v={`${(r*600*cgDays()).toLocaleString()}원`} sub/><Div/><Row l="장비 수수료(부가세 포함)" v={`${cgFee().toLocaleString()}원`} highlight/></>
+                  :<Row l="수수료" v="종료 날짜 입력 후 확정" highlight/>}
               </div>}
-              <div style={{display:"flex",gap:8}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!cgValid}/></div>
+              <div style={{display:"flex",gap:8,marginTop:16}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!cgValid}/></div>
             </div>
           )}
 
@@ -586,7 +513,7 @@ function App(){
           {step==="confirm"&&eq&&(
             <div>
               <SecT c="③ 내용을 확인해주세요"/>
-              <div style={{background:C.inputBg,borderRadius:14,padding:18,marginBottom:20}}>
+              <div style={{background:"#f8fafc",borderRadius:14,padding:18,marginBottom:20,border:"1px solid #e2e8f0"}}>
                 <Row l="업체명" v={cn}/><Row l="담당자" v={wo}/><Row l="장비명" v={eq.name}/>
                 {eq.type==="short"&&<>
                   {!isL&&<><Row l="시작시간" v={sST}/><Row l="종료시간" v={eST}/><Row l="사용시간" v={`${Math.floor(shMins()/60)}시간 ${shMins()%60}분`} sub/></>}
@@ -594,8 +521,7 @@ function App(){
                   <Div/><Row l="장비 수수료(부가세 포함)" v={`${shFee().toLocaleString()}원`} highlight/>
                 </>}
                 {eq.type==="long"&&<>
-                  <Row l="시작" v={`${sDate} ${sTime}`}/>
-                  <Row l="종료" v={eDate&&eTime?`${eDate} ${eTime}`:"미정"}/>
+                  <Row l="시작" v={`${sDate} ${sTime}`}/><Row l="종료" v={eDate&&eTime?`${eDate} ${eTime}`:"미정"}/>
                   {eDate&&eTime&&<Row l="사용시간" v={`${Math.floor(lgMins()/60)}시간 ${lgMins()%60}분`} sub/>}
                   <Div/><Row l="장비 수수료(부가세 포함)" v={eDate&&eTime?`${lgFee().toLocaleString()}원`:"미정"} highlight/>
                 </>}
@@ -613,18 +539,23 @@ function App(){
             </div>
           )}
 
-          {step==="sending"&&<div style={{textAlign:"center",padding:"20px 0"}}><div style={{fontSize:40,marginBottom:16}}>⏳</div><div style={{color:C.text,fontSize:17,fontWeight:600}}>구글 시트에 저장 중...</div></div>}
+          {step==="sending"&&(
+            <div style={{textAlign:"center",padding:"20px 0"}}>
+              <div style={{fontSize:36,marginBottom:16}}>⏳</div>
+              <div style={{color:"#0f172a",fontSize:16,fontWeight:600}}>구글 시트에 저장 중...</div>
+            </div>
+          )}
 
           {step==="done"&&last&&(
             <div style={{textAlign:"center"}}>
-              <div style={{width:72,height:72,borderRadius:"50%",background:"linear-gradient(135deg,#059669,#10b981)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:32}}>✓</div>
-              <div style={{color:C.text,fontSize:19,fontWeight:700,marginBottom:6}}>기록 완료!</div>
-              <div style={{color:C.muted,fontSize:13,marginBottom:24}}>구글 시트에 저장되었습니다</div>
-              <div style={{background:C.inputBg,borderRadius:12,padding:16,marginBottom:20,textAlign:"left"}}>
+              <div style={{width:64,height:64,borderRadius:"50%",background:"#dcfce7",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:28}}>✓</div>
+              <div style={{color:"#0f172a",fontSize:18,fontWeight:700,marginBottom:4}}>기록 완료!</div>
+              <div style={{color:"#64748b",fontSize:13,marginBottom:24}}>구글 시트에 저장되었습니다</div>
+              <div style={{background:"#f8fafc",borderRadius:12,padding:16,marginBottom:20,textAlign:"left",border:"1px solid #e2e8f0"}}>
                 <Row l="업체명" v={last.업체명}/><Row l="장비명" v={last.장비명}/>
                 <Row l="장비 수수료(부가세 포함)" v={typeof last.수수료==="number"?`${last.수수료.toLocaleString()}원`:"미정"} highlight/>
               </div>
-              <button onClick={reset} style={{width:"100%",padding:15,background:`linear-gradient(135deg,${C.primaryDark},${C.primary})`,color:"#fff",border:"none",borderRadius:12,fontSize:15,fontWeight:700,cursor:"pointer"}}>처음으로</button>
+              <button onClick={reset} style={{width:"100%",padding:13,background:"#2563eb",color:"#fff",border:"none",borderRadius:10,fontSize:14,fontWeight:600,cursor:"pointer"}}>처음으로</button>
             </div>
           )}
 
@@ -633,18 +564,18 @@ function App(){
               <SecT c={`오늘 기록 (${records.length}건)`}/>
               <div style={{maxHeight:340,overflowY:"auto",marginBottom:16}}>
                 {records.map((rec,i)=>(
-                  <div key={i} style={{background:C.inputBg,borderRadius:10,padding:"12px 14px",marginBottom:8}}>
+                  <div key={i} style={{background:"#f8fafc",borderRadius:10,padding:"12px 14px",marginBottom:8,border:"1px solid #e2e8f0"}}>
                     <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
-                      <span style={{color:C.text,fontWeight:600,fontSize:13}}>{rec.장비명}</span>
-                      <span style={{color:C.primary,fontWeight:700,fontSize:13}}>{typeof rec.수수료==="number"?`${rec.수수료.toLocaleString()}원`:"미정"}</span>
+                      <span style={{color:"#0f172a",fontWeight:600,fontSize:13}}>{rec.장비명}</span>
+                      <span style={{color:"#2563eb",fontWeight:700,fontSize:13}}>{typeof rec.수수료==="number"?`${rec.수수료.toLocaleString()}원`:"미정"}</span>
                     </div>
-                    <div style={{color:C.muted,fontSize:12}}>{rec.업체명} · {rec.담당자}</div>
+                    <div style={{color:"#64748b",fontSize:12}}>{rec.업체명} · {rec.담당자}</div>
                   </div>
                 ))}
               </div>
-              <div style={{background:"#0c2a3f",borderRadius:10,padding:"12px 14px",marginBottom:16,display:"flex",justifyContent:"space-between"}}>
-                <span style={{color:C.muted,fontSize:13}}>합계(부가세 포함)</span>
-                <span style={{color:C.primary,fontWeight:700}}>{records.filter(r=>typeof r.수수료==="number").reduce((s,r)=>s+r.수수료,0).toLocaleString()}원</span>
+              <div style={{background:"#eff6ff",borderRadius:10,padding:"12px 14px",marginBottom:16,display:"flex",justifyContent:"space-between",border:"1px solid #bfdbfe"}}>
+                <span style={{color:"#64748b",fontSize:13}}>합계(부가세 포함)</span>
+                <span style={{color:"#2563eb",fontWeight:700}}>{records.filter(r=>typeof r.수수료==="number").reduce((s,r)=>s+r.수수료,0).toLocaleString()}원</span>
               </div>
               <GBtn label="← 홈으로" onClick={()=>setStep("home")}/>
             </div>
@@ -655,6 +586,9 @@ function App(){
     </div>
   );
 }
+
+// isHour, isDay 가 short 폼에서 정의되어있지 않아 undefined 처리
+const isHour = true;
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>

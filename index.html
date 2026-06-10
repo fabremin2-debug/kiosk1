@@ -9,14 +9,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
-  select, input { -webkit-appearance: none; appearance: none; }
-  input[type=time]::-webkit-calendar-picker-indicator,
-  input[type=date]::-webkit-calendar-picker-indicator { opacity: 0.6; cursor: pointer; }
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: #f1f5f9; }
-  ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #f0f4f8; font-family: 'Segoe UI', sans-serif; }
+select, input { -webkit-appearance: none; appearance: none; }
+input[type=time]::-webkit-calendar-picker-indicator,
+input[type=date]::-webkit-calendar-picker-indicator { opacity: 0.6; cursor: pointer; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 </style>
 </head>
 <body>
@@ -27,52 +27,54 @@ const KIOSK_URL = "https://fabremin2-debug.github.io/kiosk1/";
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVRC4ltnSh6SMltl9GVljNqwK-Rm-PIFThSD6X-R4NiNxhYNl8vj0lkB1Y3jYX7HZT3w/exec";
 
 const EQUIPMENT = [
-  { name: "회전농축기-4",             code: "12CBF-12D3A3201",  fee: 550,   unit: "Hour", type: "short" },
-  { name: "회전배양기",               code: "98B24-01D3A3806",  fee: 400,   unit: "Hour", type: "short" },
-  { name: "가스크로마토그래프-4",     code: "08A19-10D3A3202",  fee: 2360,  unit: "Hour", type: "short" },
-  { name: "실시간중합효소연쇄반응기-2",code:"08A19-11D3A3102",  fee: 2450,  unit: "Hour", type: "short" },
-  { name: "화학발광이미지분석장치-2", code: "08A19-09D3A2607",  fee: 2260,  unit: "Hour", type: "short" },
-  { name: "효소면역측정기-4",         code: "08A19-09D3A2501",  fee: 2960,  unit: "Hour", type: "short" },
-  { name: "자동크로마토그래프",       code: "08A19-09D3A2608",  fee: 1650,  unit: "Hour", type: "short" },
-  { name: "마이크로어레이분석장치-4", code: "08A19-09D3A2609",  fee: 4800,  unit: "Hour", type: "short" },
-  { name: "고속원심분리기-4",         code: "02A19-03D3A7201",  fee: 800,   unit: "Hour", type: "short" },
-  { name: "초고속원심분리기-2",       code: "02A19-04D3A6702",  fee: 4340,  unit: "Hour", type: "short" },
-  { name: "탁상용 원심분리기-1",      code: "98B24-99D3A2302",  fee: 200,   unit: "Hour", type: "short" },
-  { name: "초순수제조기-2",           code: "02A19-02D3A3701",  fee: 500,   unit: "L",    type: "short" },
-  { name: "초순수제조장치-3",         code: "02A19-03D3A6711",  fee: 550,   unit: "L",    type: "short" },
-  { name: "초음파장치",               code: "98B24-99D3A2503",  fee: 250,   unit: "Hour", type: "short" },
-  { name: "연쇄중합반응기-1",         code: "98B24-00D3A2404",  fee: 240,   unit: "Hour", type: "short" },
-  { name: "제빙기-3",                 code: "16CBF-16D3A3901",  fee: 320,   unit: "Hour", type: "short" },
-  { name: "공촛점레이저주사현미경",   code: "02A19-07D3A2901",  fee: 6000,  unit: "Hour", type: "short" },
-  { name: "유세포분석기",             code: "08A19-09D3A3801",  fee: 2820,  unit: "Hour", type: "short" },
-  { name: "입도분석기",               code: "02A19-06D3A3106",  fee: 2160,  unit: "Hour", type: "short" },
-  { name: "피부측정통합장치",         code: "02A19-03D3A2701",  fee: 3430,  unit: "Hour", type: "short" },
-  { name: "원적외선건조기",           code: "98B24-01D3A1315",  fee: 12450, unit: "Day",  type: "short" },
-  { name: "대형회전증발농축기",       code: "98B24-99D3A1925",  fee: 54000, unit: "Day",  type: "short" },
-  { name: "고압멸균기-9",             code: "08A19-11D3A4901",  fee: 270,   unit: "Hour", type: "short" },
-  { name: "도립현미경-1",             code: "98B24-99D3A2507",  fee: 230,   unit: "Hour", type: "short" },
-  { name: "자외-가시선분광광도계-7",  code: "02A19-03D3A6704",  fee: 320,   unit: "Hour", type: "short" },
-  { name: "고속액체크로마토그래프-5", code: "02A19-04D3A6704",  fee: 5000,  unit: "Hour", type: "long" },
-  { name: "고속액체크로마토그래프-8", code: "08A19-09D3A2605",  fee: 5000,  unit: "Hour", type: "long" },
-  { name: "고속액체크로마토그래프-11",code: "15CBF-15D3A2201",  fee: 5500,  unit: "Hour", type: "long" },
-  { name: "고속액체크로마토그래프-12",code: "15CBF-17D3A2201",  fee: 5500,  unit: "Hour", type: "long" },
-  { name: "고속액체크로마토그래프-13",code: "15CBF-17D3A2202",  fee: 5500,  unit: "Hour", type: "long" },
-  { name: "고속액체크로마토그래프-14",code: "15CBF-17D3A2203",  fee: 5500,  unit: "Hour", type: "long" },
-  { name: "고속액체크로마토그래프-15",code: "15CBF-17D3A2204",  fee: 5500,  unit: "Hour", type: "long" },
-  { name: "진공건조기-2",             code: "02A19-07D3A3803",  fee: 780,   unit: "Hour", type: "long" },
-  { name: "배양기-2",                 code: "99B24-99D3A3808",  fee: 100,   unit: "Hour", type: "long" },
-  { name: "초저온냉동고-5",           code: "08A19-10D3A3201",  fee: 690,   unit: "Hour", type: "long" },
-  { name: "건조기-1",                 code: "98B24-99D3A1921-2", fee: 130,  unit: "Hour", type: "long" },
-  { name: "이산화탄소배양기-1",       code: "98B24-99D3A2504",  fee: 170,   unit: "Hour", type: "long" },
-  { name: "진탕배양기-7",             code: "16CBF-16D3A3902",  fee: 160,   unit: "Hour", type: "long" },
-  { name: "진탕배양기-8",             code: "16CBF-16D3A3903",  fee: 160,   unit: "Hour", type: "long" },
-  { name: "무균대-7",                 code: "02A19-03D3A6701",  fee: 150,   unit: "Hour", type: "long" },
-  { name: "항온항습동물사육챔버-3",   code: "08A19-09D3A2610",  fee: 0,     unit: "Cage", type: "cage" },
-  { name: "항온항습동물사육챔버-4",   code: "20SCBF-22D3A7642", fee: 0,     unit: "Cage", type: "cage" },
+  { name:"회전농축기-4",              code:"12CBF-12D3A3201",  fee:550,   unit:"Hour", type:"short" },
+  { name:"회전배양기",                code:"98B24-01D3A3806",  fee:400,   unit:"Hour", type:"short" },
+  { name:"실시간중합효소연쇄반응기-2", code:"08A19-11D3A3102",  fee:2450,  unit:"Hour", type:"short" },
+  { name:"화학발광이미지분석장치-2",   code:"08A19-09D3A2607",  fee:2260,  unit:"Hour", type:"short" },
+  { name:"효소면역측정기-4",           code:"08A19-09D3A2501",  fee:2960,  unit:"Hour", type:"short" },
+  { name:"자동크로마토그래프",         code:"08A19-09D3A2608",  fee:1650,  unit:"Hour", type:"short" },
+  { name:"마이크로어레이분석장치-4",   code:"08A19-09D3A2609",  fee:4800,  unit:"Hour", type:"short" },
+  { name:"고속원심분리기-4",           code:"02A19-03D3A7201",  fee:800,   unit:"Hour", type:"short" },
+  { name:"초고속원심분리기-2",         code:"02A19-04D3A6702",  fee:4340,  unit:"Hour", type:"short" },
+  { name:"탁상용 원심분리기-1",        code:"98B24-99D3A2302",  fee:200,   unit:"Hour", type:"short" },
+  { name:"초순수제조기-2",             code:"02A19-02D3A3701",  fee:500,   unit:"L",    type:"short" },
+  { name:"초순수제조장치-3",           code:"02A19-03D3A6711",  fee:550,   unit:"L",    type:"short" },
+  { name:"초음파장치",                 code:"98B24-99D3A2503",  fee:250,   unit:"Hour", type:"short" },
+  { name:"연쇄중합반응기-1",           code:"98B24-00D3A2404",  fee:240,   unit:"Hour", type:"short" },
+  { name:"제빙기-3",                   code:"16CBF-16D3A3901",  fee:320,   unit:"Hour", type:"short" },
+  { name:"공촛점레이저주사현미경",     code:"02A19-07D3A2901",  fee:6000,  unit:"Hour", type:"short" },
+  { name:"유세포분석기",               code:"08A19-09D3A3801",  fee:2820,  unit:"Hour", type:"short" },
+  { name:"입도분석기",                 code:"02A19-06D3A3106",  fee:2160,  unit:"Hour", type:"short" },
+  { name:"피부측정통합장치",           code:"02A19-03D3A2701",  fee:3430,  unit:"Hour", type:"short" },
+  { name:"원적외선건조기",             code:"98B24-01D3A1315",  fee:12450, unit:"Day",  type:"short" },
+  { name:"대형회전증발농축기",         code:"98B24-99D3A1925",  fee:54000, unit:"Day",  type:"long" },
+  { name:"고압멸균기-9",               code:"08A19-11D3A4901",  fee:270,   unit:"Hour", type:"short" },
+  { name:"도립현미경-1",               code:"98B24-99D3A2507",  fee:230,   unit:"Hour", type:"short" },
+  { name:"자외-가시선분광광도계-7",    code:"02A19-03D3A6704",  fee:320,   unit:"Hour", type:"short" },
+  // 장기
+  { name:"가스크로마토그래프-4",       code:"08A19-10D3A3202",  fee:2360,  unit:"Hour", type:"long" },
+  { name:"고속액체크로마토그래프-5",   code:"02A19-04D3A6704",  fee:5000,  unit:"Hour", type:"long" },
+  { name:"고속액체크로마토그래프-8",   code:"08A19-09D3A2605",  fee:5000,  unit:"Hour", type:"long" },
+  { name:"고속액체크로마토그래프-11",  code:"15CBF-15D3A2201",  fee:5500,  unit:"Hour", type:"long" },
+  { name:"고속액체크로마토그래프-12",  code:"15CBF-17D3A2201",  fee:5500,  unit:"Hour", type:"long" },
+  { name:"고속액체크로마토그래프-13",  code:"15CBF-17D3A2202",  fee:5500,  unit:"Hour", type:"long" },
+  { name:"고속액체크로마토그래프-14",  code:"15CBF-17D3A2203",  fee:5500,  unit:"Hour", type:"long" },
+  { name:"고속액체크로마토그래프-15",  code:"15CBF-17D3A2204",  fee:5500,  unit:"Hour", type:"long" },
+  { name:"진공건조기-2",               code:"02A19-07D3A3803",  fee:780,   unit:"Hour", type:"long" },
+  { name:"배양기-2",                   code:"99B24-99D3A3808",  fee:100,   unit:"Hour", type:"long" },
+  { name:"초저온냉동고-5",             code:"08A19-10D3A3201",  fee:690,   unit:"Hour", type:"long" },
+  { name:"건조기-1",                   code:"98B24-99D3A1921-2", fee:130,  unit:"Hour", type:"long" },
+  { name:"이산화탄소배양기-1",         code:"98B24-99D3A2504",  fee:170,   unit:"Hour", type:"long" },
+  { name:"진탕배양기-7",               code:"16CBF-16D3A3902",  fee:160,   unit:"Hour", type:"long" },
+  { name:"진탕배양기-8",               code:"16CBF-16D3A3903",  fee:160,   unit:"Hour", type:"long" },
+  { name:"무균대-7",                   code:"02A19-03D3A6701",  fee:150,   unit:"Hour", type:"long" },
+  // 챔버
+  { name:"항온항습동물사육챔버-3",     code:"08A19-09D3A2610",  fee:0,     unit:"Cage", type:"cage" },
+  { name:"항온항습동물사육챔버-4",     code:"20SCBF-22D3A7642", fee:0,     unit:"Cage", type:"cage" },
 ];
 
 const COMPANIES = [
-  "직접입력",
+  "직접입력","(재)춘천바이오산업진흥원",
   "㈜청도제약","㈜다럼앤바이오","㈜압타머사이언스 씨알오(CRO)센터","코아스템켐온㈜",
   "㈜유바이오로직스","㈜팜스토리","메디허브바이오㈜","㈜화진바이오코스메틱",
   "㈜이뮨팜","㈜블루진","㈜앱틀라스","㈜더밸류바이오텍","㈜엠텍","㈜청아굿푸드",
@@ -93,24 +95,14 @@ const COMPANIES = [
   "㈜바이오메트릭스 테크놀로지"
 ];
 
-// ── 상수 ──
-const IS = {width:"100%",padding:"11px 14px",borderRadius:10,background:"#fff",border:"1.5px solid #94a3b8",color:"#0f172a",fontSize:13,marginBottom:14,outline:"none",boxSizing:"border-box"};
-
+// ── 유틸 ──
+const IS = {width:"100%",padding:"11px 14px",height:42,borderRadius:10,background:"#fff",border:"1.5px solid #94a3b8",color:"#0f172a",fontSize:13,marginBottom:14,outline:"none",boxSizing:"border-box"};
 const todayStr = () => new Date().toISOString().slice(0,10);
 const nowStr   = () => new Date().toTimeString().slice(0,5);
 const toKoDate = () => new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
-
-const diffMins = (sd,st,ed,et) => {
-  if(!sd||!st||!ed||!et) return 0;
-  const d=Math.round((new Date(`${ed}T${et}`)- new Date(`${sd}T${st}`))/60000);
-  return d>0?d:0;
-};
-const diffDays = (sd,ed) => {
-  if(!sd||!ed) return 0;
-  const d=Math.ceil((new Date(ed)-new Date(sd))/86400000);
-  return d>0?d:0;
-};
-const calcFee = (eq,mins,days,mq,rq,qty) => {
+const diffMins = (sd,st,ed,et) => { if(!sd||!st||!ed||!et) return 0; const d=Math.round((new Date(`${ed}T${et}`)-new Date(`${sd}T${st}`))/60000); return d>0?d:0; };
+const diffDays = (sd,ed) => { if(!sd||!ed) return 0; const d=Math.ceil((new Date(ed)-new Date(sd))/86400000); return d>0?d:0; };
+const calcFee  = (eq,mins,days,mq,rq,qty) => {
   if(!eq) return 0;
   let base=0;
   if(eq.type==="cage") base=((parseInt(mq)||0)*500+(parseInt(rq)||0)*600)*(days||1);
@@ -119,43 +111,49 @@ const calcFee = (eq,mins,days,mq,rq,qty) => {
   else base=Math.ceil((mins||0)/60)*eq.fee;
   return Math.round(base*1.1);
 };
-const typeLabel = t=>({short:"단기",long:"장기사용",cage:"동물사육챔버"}[t]||"");
+const typeLabel = t => ({short:"단기",long:"장기사용",cage:"동물사육챔버"}[t]||"");
 
-// ── 공통 컴포넌트 ──
-const Lbl = ({children}) => <div style={{color:"#334155",fontSize:12,fontWeight:600,marginBottom:6}}>{children}</div>;
-const NowBtn = ({onClick}) => <button onClick={onClick} style={{padding:"0 10px",height:42,borderRadius:8,background:"#eff6ff",border:"1.5px solid #93c5fd",color:"#1d4ed8",fontSize:11,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",marginBottom:14}}>지금</button>;
+// ── UI 컴포넌트 ──
+const Lbl  = ({children}) => <div style={{color:"#334155",fontSize:12,fontWeight:600,marginBottom:6}}>{children}</div>;
 const SecT = ({c}) => <div style={{color:"#0f172a",fontSize:13,fontWeight:700,marginBottom:14}}>{c}</div>;
+const NowBtn = ({onClick}) => <button onClick={onClick} style={{padding:"0 10px",height:42,borderRadius:8,background:"#eff6ff",border:"1.5px solid #93c5fd",color:"#1d4ed8",fontSize:11,fontWeight:600,cursor:"pointer",whiteSpace:"nowrap",marginBottom:14}}>지금</button>;
 const GBtn = ({label,onClick}) => <button onClick={onClick} style={{flex:1,padding:"12px",background:"#f1f5f9",border:"1.5px solid #94a3b8",color:"#334155",borderRadius:10,fontSize:13,fontWeight:600,cursor:"pointer"}}>{label}</button>;
-const PBtn = ({label,onClick,disabled,green}) => (
-  <button disabled={disabled} onClick={onClick} style={{flex:2,padding:"13px",borderRadius:10,background:disabled?"#e2e8f0":green?"#16a34a":"#2563eb",color:disabled?"#94a3b8":"#fff",border:"none",fontSize:14,fontWeight:600,cursor:disabled?"not-allowed":"pointer"}}>{label}</button>
-);
-const Row = ({l,v,highlight,sub}) => (
-  <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
-    <span style={{color:sub?"#94a3b8":"#64748b",fontSize:sub?11:13}}>{l}</span>
-    <span style={{color:highlight?"#2563eb":"#0f172a",fontWeight:highlight?600:500,fontSize:sub?11:13}}>{v}</span>
-  </div>
-);
-const Div = () => <div style={{borderTop:"1px solid #e2e8f0",margin:"8px 0"}}/>;
-const InfoBox = ({msg}) => (
-  <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"10px 14px",marginBottom:14,color:"#1d4ed8",fontSize:12,lineHeight:1.6,whiteSpace:"pre-line"}}>{msg}</div>
-);
-const FeeBox = ({rows,fee}) => (
-  <div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}>
-    {rows.map(([l,v])=><Row key={l} l={l} v={v} sub/>)}
-    <Div/><Row l="장비 수수료(부가세 포함)" v={`${fee.toLocaleString()}원`} highlight/>
-  </div>
-);
+const PBtn = ({label,onClick,disabled,green}) => <button disabled={!!disabled} onClick={onClick} style={{flex:2,padding:"13px",borderRadius:10,background:disabled?"#e2e8f0":green?"#16a34a":"#2563eb",color:disabled?"#94a3b8":"#fff",border:"none",fontSize:14,fontWeight:600,cursor:disabled?"not-allowed":"pointer"}}>{label}</button>;
+const Row  = ({l,v,highlight,sub}) => <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}><span style={{color:sub?"#94a3b8":"#64748b",fontSize:sub?11:13}}>{l}</span><span style={{color:highlight?"#2563eb":"#0f172a",fontWeight:highlight?600:500,fontSize:sub?11:13}}>{v}</span></div>;
+const Div  = () => <div style={{borderTop:"1px solid #e2e8f0",margin:"8px 0"}}/>;
+const InfoBox = ({msg}) => <div style={{background:"#eff6ff",border:"1px solid #bfdbfe",borderRadius:10,padding:"10px 14px",marginBottom:14,color:"#1d4ed8",fontSize:12,lineHeight:1.6,whiteSpace:"pre-line"}}>{msg}</div>;
 
-function CompanyWorker({co,setCo,cu,setCu,wo,setWo}){
+function AutoComplete({value,onChange,suggestions}){
+  const [show,setShow]=React.useState(false);
+  const filtered=React.useMemo(()=>value?suggestions.filter(s=>s!=="직접입력"&&s.replace(/[㈜㈔()（）]/g,"").toLowerCase().includes(value.replace(/[㈜㈔()（）]/g,"").toLowerCase())).slice(0,6):[],[value,suggestions]);
+  return(
+    <div style={{position:"relative",marginBottom:14}}>
+      <input value={value} onChange={e=>{onChange(e.target.value);setShow(true);}} onBlur={()=>setTimeout(()=>setShow(false),150)} onFocus={()=>value&&setShow(true)} placeholder="업체명 입력 (일부만 입력하면 목록 표시)" style={{...IS,marginBottom:0}}/>
+      {show&&filtered.length>0&&(
+        <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",border:"1.5px solid #94a3b8",borderRadius:10,zIndex:200,boxShadow:"0 4px 16px rgba(0,0,0,0.1)",maxHeight:180,overflowY:"auto"}}>
+          {filtered.map(s=>(
+            <div key={s} onMouseDown={()=>{onChange(s);setShow(false);}} style={{padding:"10px 14px",cursor:"pointer",fontSize:13,color:"#0f172a",borderBottom:"1px solid #f1f5f9"}}>
+              {s}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CompanyWorker({co,setCo,cu,setCu,wo,setWo,ph,setPh}){
   return(<>
     <Lbl>업체명</Lbl>
     <select value={co} onChange={e=>setCo(e.target.value)} style={IS}>
       <option value="">선택하세요</option>
       {COMPANIES.map(c=><option key={c} value={c}>{c}</option>)}
     </select>
-    {co==="직접입력"&&<input value={cu} onChange={e=>setCu(e.target.value)} placeholder="업체명 입력" style={IS}/>}
+    {co==="직접입력"&&<AutoComplete value={cu} onChange={setCu} suggestions={COMPANIES}/>}
     <Lbl>담당자명</Lbl>
     <input value={wo} onChange={e=>setWo(e.target.value)} placeholder="성함을 입력하세요" style={IS}/>
+    <Lbl>휴대폰 번호</Lbl>
+    <input value={ph} onChange={e=>setPh(e.target.value)} placeholder="010-0000-0000" style={IS} type="tel"/>
   </>);
 }
 
@@ -169,7 +167,7 @@ function EqBadge({eq}){
         <div style={{color:"#0f172a",fontWeight:600,fontSize:14}}>{eq.name}</div>
       </div>
       <div style={{color:tc,fontSize:12,fontWeight:600}}>
-        {eq.type==="cage"?"M:500원 R:600원":eq.unit==="L"?`${eq.fee.toLocaleString()}원/L`:`${eq.fee.toLocaleString()}원/H`}
+        {eq.type==="cage"?"M:500원 R:600원":eq.unit==="L"?`${eq.fee.toLocaleString()}원/L`:`${eq.fee.toLocaleString()}원/시간`}
       </div>
     </div>
   );
@@ -208,12 +206,11 @@ function QRPage({onBack}){
 function ReservationPage({onBack}){
   const [ec,setEc]=React.useState("");
   const [co,setCo]=React.useState(""); const [cu,setCu]=React.useState("");
-  const [wo,setWo]=React.useState("");
-  const [sdt,setSdt]=React.useState(todayStr());
-  const [edt,setEdt]=React.useState("");
+  const [wo,setWo]=React.useState(""); const [ph,setPh]=React.useState("");
+  const [sdt,setSdt]=React.useState(todayStr()); const [edt,setEdt]=React.useState("");
   const [done,setDone]=React.useState(false);
   const [reservations,setReservations]=React.useState([]);
-  const [loading,setLoading]=React.useState(true);
+  const [loading,setLoading]=React.useState(false);
   const [calMonth,setCalMonth]=React.useState(new Date());
   const maxDate=new Date(Date.now()+21*86400000).toISOString().slice(0,10);
 
@@ -222,54 +219,49 @@ function ReservationPage({onBack}){
     setLoading(true); setReservations([]);
     const eqName=EQUIPMENT.find(e=>e.code===ec)?.name||"";
     const cbName="cb_"+Date.now();
-    const script=document.createElement("script");
-    script.src=SCRIPT_URL+"?action=getReservations&장비명="+encodeURIComponent(eqName)+"&callback="+cbName;
-    window[cbName]=(data)=>{
-      if(data.result==="success") setReservations(data.data||[]);
-      delete window[cbName]; document.body.removeChild(script); setLoading(false);
-    };
-    script.onerror=()=>{setLoading(false);delete window[cbName];};
-    document.body.appendChild(script);
+    const s=document.createElement("script");
+    s.src=SCRIPT_URL+"?action=getReservations&장비명="+encodeURIComponent(eqName)+"&callback="+cbName;
+    window[cbName]=(data)=>{ if(data.result==="success") setReservations(data.data||[]); delete window[cbName]; document.body.removeChild(s); setLoading(false); };
+    s.onerror=()=>{ setLoading(false); delete window[cbName]; };
+    document.body.appendChild(s);
   },[ec]);
 
   const eq=EQUIPMENT.find(e=>e.code===ec);
   const cn=co==="직접입력"?cu:co;
-  const days=diffDays(sdt,edt)||1;
+  const days=Math.max(diffDays(sdt,edt),1);
   const valid=cn&&wo&&ec&&sdt&&edt;
 
   const bookedDates=React.useMemo(()=>{
     const set=new Set();
     reservations.forEach(r=>{
       if(!r.예약시작일||!r.예약종료일) return;
-      let cur=new Date(r.예약시작일);
-      const end=new Date(r.예약종료일);
+      let cur=new Date(r.예약시작일); const end=new Date(r.예약종료일);
       while(cur<=end){set.add(cur.toISOString().slice(0,10));cur.setDate(cur.getDate()+1);}
     });
     return set;
   },[reservations]);
 
-  const isBooked=d=>bookedDates.has(d);
-  const isInRange=d=>sdt&&edt&&d>=sdt&&d<=edt&&!isBooked(d);
-
   const renderCal=()=>{
-    const year=calMonth.getFullYear(),month=calMonth.getMonth();
-    const firstDay=new Date(year,month,1).getDay();
-    const daysInMonth=new Date(year,month+1,0).getDate();
+    const year=calMonth.getFullYear(), month=calMonth.getMonth();
+    const first=new Date(year,month,1).getDay();
+    const dim=new Date(year,month+1,0).getDate();
     const today=todayStr();
     const cells=[];
-    for(let i=0;i<firstDay;i++) cells.push(<div key={`e${i}`}/>);
-    for(let d=1;d<=daysInMonth;d++){
+    for(let i=0;i<first;i++) cells.push(<div key={"e"+i}/>);
+    for(let d=1;d<=dim;d++){
       const ds=`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-      const past=ds<today,over=ds>maxDate,booked=isBooked(ds),mine=isInRange(ds),isStart=ds===sdt&&!edt;
+      const past=ds<today, over=ds>maxDate, booked=bookedDates.has(ds);
+      const inRange=sdt&&edt&&ds>=sdt&&ds<=edt&&!booked;
+      const isStart=ds===sdt&&!edt;
       const disabled=past||over||booked;
-      let bg="transparent",color=past||over?"#cbd5e1":"#0f172a",fw="400";
+      let bg="transparent", color=past||over?"#cbd5e1":"#0f172a", fw="400";
       if(booked){bg="#fee2e2";color="#ef4444";}
-      else if(mine||isStart){bg="#dbeafe";color="#1d4ed8";fw="600";}
+      else if(inRange||isStart){bg="#dbeafe";color="#1d4ed8";fw="600";}
       cells.push(
         <div key={ds} onClick={()=>{
           if(disabled) return;
-          if(!sdt||!edt){if(!sdt){setSdt(ds);}else if(!edt){ds<sdt?setSdt(ds):setEdt(ds);}}
-          else{setSdt(ds);setEdt("");}
+          if(!sdt||edt){setSdt(ds);setEdt("");}
+          else if(!edt){ds<sdt?setSdt(ds):setEdt(ds);}
         }} style={{textAlign:"center",padding:"6px 2px",borderRadius:6,background:bg,color,fontSize:13,cursor:disabled?"not-allowed":"pointer",opacity:disabled?0.4:1,fontWeight:fw}}>
           {d}
         </div>
@@ -279,84 +271,84 @@ function ReservationPage({onBack}){
   };
 
   const submit=async()=>{
-    const r={연도:new Date(sdt).getFullYear(),날짜:new Date(sdt).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,장비명:eq?.name,장비코드:ec,부과단위:"Day",예약시작일:sdt,예약종료일:edt,예약일수:`${days}일`,구분:"예약"};
+    const r={연도:new Date(sdt).getFullYear(),날짜:new Date(sdt).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq?.name,장비코드:ec,부과단위:"Day",예약시작일:sdt,예약종료일:edt,예약일수:days+"일",구분:"예약"};
     try{await fetch(SCRIPT_URL+"?"+new URLSearchParams(r).toString(),{method:"GET",mode:"no-cors"});}catch(e){}
     setDone(true);
   };
 
-  if(done) return <DonePage onBack={onBack} rows={[["업체명",cn],["장비명",eq?.name],["예약 시작일",sdt],["예약 종료일",edt],["예약 일수",`${days}일`]]}/>;
-
+  if(done) return <DonePage onBack={onBack} rows={[["업체명",cn],["장비명",eq?.name],["예약 시작일",sdt],["예약 종료일",edt],["예약 일수",days+"일"]]}/>;
   return(
     <div>
       <SecT c="📅 고속액체크로마토그래프 장비예약"/>
-      <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo}/>
+      <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo} ph={ph} setPh={setPh}/>
       <Lbl>장비 선택</Lbl>
       <select value={ec} onChange={e=>{setEc(e.target.value);setSdt(todayStr());setEdt("");}} style={IS}>
         <option value="">선택하세요</option>
         {EQUIPMENT.filter(e=>e.name.includes("고속액체크로마토그래프")).map(e=><option key={e.code} value={e.code}>{e.name}</option>)}
       </select>
-      {ec&&(
-        <div>
-          <div style={{background:"#f8fafc",borderRadius:12,padding:14,marginBottom:14,border:"1px solid #e2e8f0"}}>
-            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
-              <button onClick={()=>setCalMonth(new Date(calMonth.getFullYear(),calMonth.getMonth()-1,1))} style={{background:"none",border:"none",color:"#64748b",fontSize:20,cursor:"pointer",padding:"0 4px"}}>‹</button>
-              <span style={{color:"#0f172a",fontWeight:600,fontSize:14}}>{calMonth.getFullYear()}년 {calMonth.getMonth()+1}월</span>
-              <button onClick={()=>setCalMonth(new Date(calMonth.getFullYear(),calMonth.getMonth()+1,1))} style={{background:"none",border:"none",color:"#64748b",fontSize:20,cursor:"pointer",padding:"0 4px"}}>›</button>
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:4}}>
-              {["일","월","화","수","목","금","토"].map(d=><div key={d} style={{textAlign:"center",color:"#94a3b8",fontSize:11}}>{d}</div>)}
-            </div>
-            <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}}>
-              {loading?<div style={{gridColumn:"1/-1",textAlign:"center",color:"#94a3b8",padding:10,fontSize:12}}>예약 현황 불러오는 중...</div>:renderCal()}
-            </div>
-            <div style={{display:"flex",gap:12,marginTop:10}}>
-              <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,background:"#fee2e2",border:"1px solid #fca5a5"}}/><span style={{color:"#64748b",fontSize:10}}>예약됨</span></div>
-              <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,background:"#dbeafe"}}/><span style={{color:"#64748b",fontSize:10}}>내 선택</span></div>
-            </div>
+      {ec&&(<>
+        <div style={{background:"#f8fafc",borderRadius:12,padding:14,marginBottom:14,border:"1px solid #e2e8f0"}}>
+          <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
+            <button onClick={()=>setCalMonth(new Date(calMonth.getFullYear(),calMonth.getMonth()-1,1))} style={{background:"none",border:"none",color:"#64748b",fontSize:20,cursor:"pointer"}}>‹</button>
+            <span style={{color:"#0f172a",fontWeight:600,fontSize:14}}>{calMonth.getFullYear()}년 {calMonth.getMonth()+1}월</span>
+            <button onClick={()=>setCalMonth(new Date(calMonth.getFullYear(),calMonth.getMonth()+1,1))} style={{background:"none",border:"none",color:"#64748b",fontSize:20,cursor:"pointer"}}>›</button>
           </div>
-          <div style={{color:"#94a3b8",fontSize:11,marginBottom:12,textAlign:"center"}}>달력에서 시작일 → 종료일 순으로 탭하거나 직접 입력하세요</div>
-          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-            <div><Lbl>예약 시작일 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sdt} onChange={e=>{setSdt(e.target.value);setEdt("");}} min={todayStr()} max={maxDate} style={IS}/></div>
-            <div><Lbl>예약 종료일 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={edt} onChange={e=>setEdt(e.target.value)} min={sdt||todayStr()} max={maxDate} style={IS}/></div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2,marginBottom:4}}>
+            {["일","월","화","수","목","금","토"].map(d=><div key={d} style={{textAlign:"center",color:"#94a3b8",fontSize:11}}>{d}</div>)}
           </div>
-          {sdt&&edt&&<FeeBox rows={[["예약 기간",`${sdt} ~ ${edt}`],["예약 일수",`${days}일`]]} fee={0}/>}
+          <div style={{display:"grid",gridTemplateColumns:"repeat(7,1fr)",gap:2}}>
+            {loading?<div style={{gridColumn:"1/-1",textAlign:"center",color:"#94a3b8",padding:10,fontSize:12}}>불러오는 중...</div>:renderCal()}
+          </div>
+          <div style={{display:"flex",gap:12,marginTop:10}}>
+            <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,background:"#fee2e2",border:"1px solid #fca5a5"}}/><span style={{color:"#64748b",fontSize:10}}>예약됨</span></div>
+            <div style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,background:"#dbeafe"}}/><span style={{color:"#64748b",fontSize:10}}>내 선택</span></div>
+          </div>
         </div>
-      )}
+        <div style={{color:"#94a3b8",fontSize:11,marginBottom:12,textAlign:"center"}}>달력에서 시작일 → 종료일 순으로 탭하거나 직접 입력하세요</div>
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+          <div><Lbl>예약 시작일 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sdt} onChange={e=>{setSdt(e.target.value);setEdt("");}} min={todayStr()} max={maxDate} style={IS}/></div>
+          <div><Lbl>예약 종료일 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={edt} onChange={e=>setEdt(e.target.value)} min={sdt||todayStr()} max={maxDate} style={IS}/></div>
+        </div>
+        {sdt&&edt&&<div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}><Row l="예약 기간" v={`${sdt} ~ ${edt}`} sub/><Row l="예약 일수" v={days+"일"} sub/></div>}
+      </>)}
       <div style={{display:"flex",gap:8,marginTop:16}}><GBtn label="← 뒤로" onClick={onBack}/><PBtn label="예약하기" onClick={submit} disabled={!valid}/></div>
     </div>
   );
 }
 
-// ── 메인 ──
+// ── 메인 앱 ──
 function App(){
   const [step,setStep]=React.useState("home");
   const [eqSearch,setEqSearch]=React.useState("");
   const [eq,setEq]=React.useState(null);
   const [co,setCo]=React.useState(""); const [cu,setCu]=React.useState("");
-  const [wo,setWo]=React.useState("");
+  const [wo,setWo]=React.useState(""); const [ph,setPh]=React.useState("");
   const [sST,setSST]=React.useState(""); const [eST,setEST]=React.useState("");
   const [qty,setQty]=React.useState("");
-  const [sDate,setSDate]=React.useState(todayStr());
-  const [sTime,setSTime]=React.useState("");
-  const [eDate,setEDate]=React.useState("");
-  const [eTime,setETime]=React.useState("");
-  const [mouseQ,setMouseQ]=React.useState("");
-  const [ratQ,setRatQ]=React.useState("");
+  const [sDate,setSDate]=React.useState(todayStr()); const [sTime,setSTime]=React.useState("");
+  const [eDate,setEDate]=React.useState(""); const [eTime,setETime]=React.useState("");
+  const [mouseQ,setMouseQ]=React.useState(""); const [ratQ,setRatQ]=React.useState("");
+  const [endOnly,setEndOnly]=React.useState(false);
   const [records,setRecords]=React.useState([]);
 
   const cn=co==="직접입력"?cu:co;
   const isL=eq?.unit==="L"; const isDay=eq?.unit==="Day";
+
   const shMins=()=>diffMins(todayStr(),sST,todayStr(),eST);
   const shFee=()=>calcFee(eq,shMins(),1,0,0,qty);
-  const shValid=cn&&wo&&eq&&(isL?parseInt(qty)>0:isDay?true:shMins()>0);
+  const shValid=!!(cn&&wo&&eq&&(isL?parseInt(qty)>0:isDay?true:shMins()>0));
+
   const lgMins=()=>diffMins(sDate,sTime,eDate||sDate,eTime||"23:59");
   const lgFee=()=>eDate&&eTime?calcFee(eq,lgMins(),1,0,0,0):0;
-  const lgValid=cn&&wo&&eq&&sDate&&sTime;
-  const cgDays=()=>eDate?Math.max(diffDays(sDate,eDate),1):null;
+  const lgValid=!!(cn&&wo&&eq&&(endOnly?(eDate&&eTime):(sDate&&sTime)));
+
+  const cgDays=()=>eDate?Math.max(diffDays(sDate||eDate,eDate),1):null;
   const m=parseInt(mouseQ)||0, r=parseInt(ratQ)||0;
   const cgFee=()=>eDate?Math.round((m*500+r*600)*(cgDays()||1)*1.1):0;
-  const cgValid=cn&&wo&&eq&&sDate&&(m+r)>0;
-  const filtered=EQUIPMENT.filter(e=>e.name.includes(eqSearch));
+  const cgValid=!!(cn&&wo&&eq&&(endOnly?eDate:sDate)&&(m+r)>0);
+
+  const eqNames=React.useMemo(()=>EQUIPMENT.map(e=>e.name),[]);
+  const filtered=EQUIPMENT.filter(e=>!eqSearch||e.name.includes(eqSearch));
   const last=records[records.length-1];
 
   const post=async(record)=>{
@@ -364,10 +356,12 @@ function App(){
     try{await fetch(SCRIPT_URL+"?"+new URLSearchParams(record).toString(),{method:"GET",mode:"no-cors"});}catch(e){}
     setStep("done");
   };
-  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작:sST,사용종료:eST,사용시간_분:shMins(),단가:eq.fee,수수료:shFee(),구분:"이용"});
-  const submitLong=()=>post({연도:new Date(sDate).getFullYear(),날짜:new Date(sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:sDate,사용시작시간:sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:eDate&&eTime?lgMins():"미정",단가:eq.fee,수수료:eDate&&eTime?lgFee():"미정",구분:"이용"});
-  const submitCage=()=>post({연도:new Date(sDate).getFullYear(),날짜:new Date(sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,장비명:eq.name,장비코드:eq.code,부과단위:"Cage/Day",사용시작일:sDate,사용종료일:eDate||"미정",사용일수:eDate?cgDays():"미정",마우스수:m,랫수:r,단가_마우스:500,단가_랫:600,수수료:eDate?cgFee():"미정",구분:"이용"});
-  const reset=()=>{setStep("home");setEq(null);setEqSearch("");setCo("");setCu("");setWo("");setSST("");setEST("");setQty("");setSDate(todayStr());setSTime("");setEDate("");setETime("");setMouseQ("");setRatQ("");};
+
+  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작:sST,사용종료:eST,사용시간_분:shMins(),단가:eq.fee,수수료:shFee(),구분:"이용"});
+  const submitLong=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:endOnly?"":sDate,사용시작시간:endOnly?"":sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:eDate&&eTime?lgMins():"미정",단가:eq.fee,수수료:eDate&&eTime?lgFee():"미정",구분:endOnly?"종료":"이용"});
+  const submitCage=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:"Cage/Day",사용시작일:sDate||"",사용종료일:eDate||"미정",사용일수:eDate?cgDays():"미정",마우스수:m,랫수:r,단가_마우스:500,단가_랫:600,수수료:eDate?cgFee():"미정",구분:endOnly?"퇴실":"입실"});
+
+  const reset=()=>{setStep("home");setEq(null);setEqSearch("");setCo("");setCu("");setWo("");setPh("");setSST("");setEST("");setQty("");setSDate(todayStr());setSTime("");setEDate("");setETime("");setMouseQ("");setRatQ("");setEndOnly(false);};
 
   return(
     <div style={{minHeight:"100vh",background:"#f0f4f8",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -414,22 +408,30 @@ function App(){
           {step==="equipment"&&(
             <div>
               <SecT c="① 장비를 선택하세요"/>
-              <input value={eqSearch} onChange={e=>setEqSearch(e.target.value)} placeholder="🔍 장비명 검색" style={{...IS,marginBottom:12}}/>
+              <div style={{position:"relative",marginBottom:12}}>
+                <input value={eqSearch} onChange={e=>setEqSearch(e.target.value)} placeholder="🔍 장비명 검색" style={{...IS,marginBottom:0}}/>
+                {eqSearch&&(
+                  <div style={{position:"absolute",top:"100%",left:0,right:0,background:"#fff",border:"1.5px solid #94a3b8",borderRadius:10,zIndex:200,boxShadow:"0 4px 16px rgba(0,0,0,0.1)",maxHeight:180,overflowY:"auto"}}>
+                    {eqNames.filter(n=>n.includes(eqSearch)).map(n=>(
+                      <div key={n} onMouseDown={()=>setEqSearch(n)} style={{padding:"10px 14px",cursor:"pointer",fontSize:13,color:"#0f172a",borderBottom:"1px solid #f1f5f9"}}>{n}</div>
+                    ))}
+                  </div>
+                )}
+              </div>
               <div style={{maxHeight:360,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
                 {filtered.map(e=>(
-                  <button key={e.code} onClick={()=>{setEq(e);setStep("form");}} style={{padding:"12px 10px",borderRadius:12,border:`1.5px solid ${e.type==="cage"?"#ddd6fe":e.type==="long"?"#bae6fd":"#e2e8f0"}`,background:"#fff",color:"#0f172a",cursor:"pointer",textAlign:"left"}}>
-                    <div style={{fontSize:12,fontWeight:600,marginBottom:3,lineHeight:1.3,color:"#0f172a"}}>{e.name}</div>
-                    <div style={{fontSize:10,color:e.type==="cage"?"#7c3aed":e.type==="long"?"#0284c7":"#2563eb"}}>{e.type==="cage"?"마우스/랫 일수":e.type==="long"?"장기사용":e.unit==="L"?`${e.fee.toLocaleString()}원/L`:`${e.fee.toLocaleString()}원/H`}</div>
+                  <button key={e.code} onClick={()=>{setEq(e);setEndOnly(false);setStep("form");}} style={{padding:"12px 10px",borderRadius:12,border:`1.5px solid ${e.type==="cage"?"#ddd6fe":e.type==="long"?"#bae6fd":"#e2e8f0"}`,background:"#fff",color:"#0f172a",cursor:"pointer",textAlign:"left"}}>
+                    <div style={{fontSize:12,fontWeight:600,marginBottom:3,lineHeight:1.3}}>{e.name}</div>
+                    <div style={{fontSize:10,color:e.type==="cage"?"#7c3aed":e.type==="long"?"#0284c7":"#2563eb"}}>
+                      {e.type==="cage"?"마우스/랫 일수":e.type==="long"?"장기사용":e.unit==="L"?`${e.fee.toLocaleString()}원/L`:`${e.fee.toLocaleString()}원/시간`}
+                    </div>
                   </button>
                 ))}
                 {filtered.length===0&&<div style={{color:"#94a3b8",fontSize:13,padding:"20px 0",gridColumn:"1/-1",textAlign:"center"}}>검색 결과 없음</div>}
               </div>
               <div style={{display:"flex",gap:12,marginBottom:12}}>
-                {[["short","#e2e8f0","단기"],["long","#bae6fd","장기"],["cage","#ddd6fe","동물챔버"]].map(([t,bc,l])=>(
-                  <div key={t} style={{display:"flex",alignItems:"center",gap:4}}>
-                    <div style={{width:10,height:10,borderRadius:2,border:`1.5px solid ${bc}`}}/>
-                    <span style={{color:"#64748b",fontSize:11}}>{l}</span>
-                  </div>
+                {[["#e2e8f0","단기"],["#bae6fd","장기"],["#ddd6fe","동물챔버"]].map(([bc,l])=>(
+                  <div key={l} style={{display:"flex",alignItems:"center",gap:4}}><div style={{width:10,height:10,borderRadius:2,border:`1.5px solid ${bc}`}}/><span style={{color:"#64748b",fontSize:11}}>{l}</span></div>
                 ))}
               </div>
               <GBtn label="← 뒤로" onClick={()=>setStep("home")}/>
@@ -441,22 +443,20 @@ function App(){
             <div>
               <EqBadge eq={eq}/>
               <SecT c="② 이용 정보 입력"/>
-              <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo}/>
-              {(isHour||isDay)&&(
+              <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo} ph={ph} setPh={setPh}/>
+              {!isL&&(
                 <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                   {[{l:"시작 시간",v:sST,s:setSST},{l:"종료 시간",v:eST,s:setEST}].map(({l,v,s})=>(
-                    <div key={l}>
-                      <Lbl>{l}</Lbl>
-                      <div style={{display:"flex",gap:6}}>
-                        <input type="time" value={v} onChange={e=>s(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/>
-                        <NowBtn onClick={()=>s(nowStr())}/>
-                      </div>
-                    </div>
+                    <div key={l}><Lbl>{l}</Lbl><div style={{display:"flex",gap:6}}><input type="time" value={v} onChange={e=>s(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>s(nowStr())}/></div></div>
                   ))}
                 </div>
               )}
               {isL&&<><Lbl>사용량 (리터)</Lbl><input type="number" min="1" value={qty} onChange={e=>setQty(e.target.value)} placeholder="리터 수" style={IS}/></>}
-              {shValid&&<FeeBox rows={!isL?[["실제 사용시간",`${Math.floor(shMins()/60)}시간 ${shMins()%60}분`]]:[["사용량",`${qty}L`]]} fee={shFee()}/>}
+              {shValid&&<div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}>
+                {!isL&&<Row l="실제 사용시간" v={`${Math.floor(shMins()/60)}시간 ${shMins()%60}분`} sub/>}
+                {isL&&<Row l="사용량" v={`${qty}L`} sub/>}
+                <Div/><Row l="장비 수수료(부가세 포함)" v={`${shFee().toLocaleString()}원`} highlight/>
+              </div>}
               <div style={{display:"flex",gap:8,marginTop:16}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!shValid}/></div>
             </div>
           )}
@@ -466,21 +466,23 @@ function App(){
             <div>
               <EqBadge eq={eq}/>
               <SecT c="② 이용 정보 입력"/>
-              <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo}/>
-              <InfoBox msg={"📌 장기 사용 장비입니다.\n• 시작 날짜/시간은 반드시 입력해주세요.\n• 종료 날짜/시간은 사용 종료 후 입력할 수 있습니다.\n• 종료일 미입력 시 '미정'으로 저장됩니다."}/>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                <div><Lbl>시작 날짜 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={IS}/></div>
-                <div><Lbl>시작 시간 <span style={{color:"#ef4444"}}>*</span></Lbl>
-                  <div style={{display:"flex",gap:6}}><input type="time" value={sTime} onChange={e=>setSTime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setSTime(nowStr())}/></div>
-                </div>
-                <div><Lbl>종료 날짜 <span style={{color:"#94a3b8",fontWeight:400}}>(선택)</span></Lbl><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={IS}/></div>
-                <div><Lbl>종료 시간 <span style={{color:"#94a3b8",fontWeight:400}}>(선택)</span></Lbl>
-                  <div style={{display:"flex",gap:6}}><input type="time" value={eTime} onChange={e=>setETime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setETime(nowStr())}/></div>
-                </div>
+              <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo} ph={ph} setPh={setPh}/>
+              <div style={{display:"flex",gap:8,marginBottom:14}}>
+                <button onClick={()=>setEndOnly(false)} style={{flex:1,padding:"9px",borderRadius:8,border:`1.5px solid ${!endOnly?"#2563eb":"#e2e8f0"}`,background:!endOnly?"#eff6ff":"#fff",color:!endOnly?"#1d4ed8":"#64748b",fontSize:12,fontWeight:600,cursor:"pointer"}}>사용 시작 기록</button>
+                <button onClick={()=>setEndOnly(true)} style={{flex:1,padding:"9px",borderRadius:8,border:`1.5px solid ${endOnly?"#16a34a":"#e2e8f0"}`,background:endOnly?"#f0fdf4":"#fff",color:endOnly?"#16a34a":"#64748b",fontSize:12,fontWeight:600,cursor:"pointer"}}>사용 종료 기록</button>
               </div>
+              <InfoBox msg={endOnly?"📌 종료 날짜/시간을 입력하세요.\n시작일은 선택사항입니다.":"📌 장기 사용 장비입니다.\n시작 날짜/시간은 반드시 입력해주세요.\n종료일 미입력 시 '미정'으로 저장됩니다."}/>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
+                {!endOnly&&<>
+                  <div><Lbl>시작 날짜 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={{...IS,marginBottom:0}}/></div>
+                  <div><Lbl>시작 시간 <span style={{color:"#ef4444"}}>*</span></Lbl><div style={{display:"flex",gap:6}}><input type="time" value={sTime} onChange={e=>setSTime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setSTime(nowStr())}/></div></div>
+                </>}
+                <div><Lbl>종료 날짜 <span style={{color:endOnly?"#ef4444":"#94a3b8",fontWeight:endOnly?600:400}}>{endOnly?"*":"(선택)"}</span></Lbl><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={{...IS,marginBottom:0}}/></div>
+                <div><Lbl>종료 시간 <span style={{color:endOnly?"#ef4444":"#94a3b8",fontWeight:endOnly?600:400}}>{endOnly?"*":"(선택)"}</span></Lbl><div style={{display:"flex",gap:6}}><input type="time" value={eTime} onChange={e=>setETime(e.target.value)} style={{...IS,marginBottom:0,flex:1}}/><NowBtn onClick={()=>setETime(nowStr())}/></div></div>
+              </div>
+              <div style={{height:14}}/>
               {lgValid&&<div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}>
-                {eDate&&eTime?<><Row l="실제 사용시간" v={`${Math.floor(lgMins()/60)}시간 ${lgMins()%60}분`} sub/><Div/><Row l="장비 수수료(부가세 포함)" v={`${lgFee().toLocaleString()}원`} highlight/></>
-                  :<Row l="수수료" v="종료 시간 입력 후 확정" highlight/>}
+                {eDate&&eTime?<><Row l="실제 사용시간" v={`${Math.floor(lgMins()/60)}시간 ${lgMins()%60}분`} sub/><Div/><Row l="장비 수수료(부가세 포함)" v={`${lgFee().toLocaleString()}원`} highlight/></>:<Row l="수수료" v="종료 시간 입력 후 확정" highlight/>}
               </div>}
               <div style={{display:"flex",gap:8,marginTop:16}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!lgValid}/></div>
             </div>
@@ -491,19 +493,22 @@ function App(){
             <div>
               <EqBadge eq={eq}/>
               <SecT c="② 이용 정보 입력"/>
-              <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo}/>
-              <InfoBox msg={"📌 동물사육챔버입니다.\n• 시작 날짜와 마리 수는 반드시 입력해주세요.\n• 종료 날짜는 사용 종료 후 입력할 수 있습니다."}/>
+              <CompanyWorker co={co} setCo={setCo} cu={cu} setCu={setCu} wo={wo} setWo={setWo} ph={ph} setPh={setPh}/>
+              <div style={{display:"flex",gap:8,marginBottom:14}}>
+                <button onClick={()=>setEndOnly(false)} style={{flex:1,padding:"9px",borderRadius:8,border:`1.5px solid ${!endOnly?"#2563eb":"#e2e8f0"}`,background:!endOnly?"#eff6ff":"#fff",color:!endOnly?"#1d4ed8":"#64748b",fontSize:12,fontWeight:600,cursor:"pointer"}}>입실 기록</button>
+                <button onClick={()=>setEndOnly(true)} style={{flex:1,padding:"9px",borderRadius:8,border:`1.5px solid ${endOnly?"#16a34a":"#e2e8f0"}`,background:endOnly?"#f0fdf4":"#fff",color:endOnly?"#16a34a":"#64748b",fontSize:12,fontWeight:600,cursor:"pointer"}}>퇴실 기록</button>
+              </div>
+              <InfoBox msg={endOnly?"📌 퇴실 기록입니다.\n종료 날짜와 마리 수를 입력해주세요.":"📌 입실 기록입니다.\n시작 날짜와 마리 수를 반드시 입력해주세요."}/>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-                <div><Lbl>시작 날짜 <span style={{color:"#ef4444"}}>*</span></Lbl><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={IS}/></div>
-                <div><Lbl>종료 날짜 <span style={{color:"#94a3b8",fontWeight:400}}>(선택)</span></Lbl><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={IS}/></div>
+                <div><Lbl>시작 날짜 <span style={{color:endOnly?"#94a3b8":"#ef4444",fontWeight:endOnly?400:600}}>{endOnly?"(선택)":"*"}</span></Lbl><input type="date" value={sDate} onChange={e=>setSDate(e.target.value)} style={IS}/></div>
+                <div><Lbl>종료 날짜 <span style={{color:endOnly?"#ef4444":"#94a3b8",fontWeight:endOnly?600:400}}>{endOnly?"*":"(선택)"}</span></Lbl><input type="date" value={eDate} onChange={e=>setEDate(e.target.value)} style={IS}/></div>
               </div>
               <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 <div><Lbl>마우스 수 <span style={{color:"#94a3b8",fontWeight:400,fontSize:10}}>(500원/마리/일)</span></Lbl><input type="number" min="0" value={mouseQ} onChange={e=>setMouseQ(e.target.value)} placeholder="0" style={IS}/></div>
                 <div><Lbl>랫 수 <span style={{color:"#94a3b8",fontWeight:400,fontSize:10}}>(600원/마리/일)</span></Lbl><input type="number" min="0" value={ratQ} onChange={e=>setRatQ(e.target.value)} placeholder="0" style={IS}/></div>
               </div>
               {cgValid&&<div style={{background:"#f8fafc",borderRadius:12,padding:"14px 16px",border:"1px solid #e2e8f0",marginBottom:0}}>
-                {eDate?<><Row l="사용일수" v={`${cgDays()}일`} sub/><Row l="마우스 비용" v={`${(m*500*cgDays()).toLocaleString()}원`} sub/><Row l="랫 비용" v={`${(r*600*cgDays()).toLocaleString()}원`} sub/><Div/><Row l="장비 수수료(부가세 포함)" v={`${cgFee().toLocaleString()}원`} highlight/></>
-                  :<Row l="수수료" v="종료 날짜 입력 후 확정" highlight/>}
+                {eDate?<><Row l="사용일수" v={`${cgDays()}일`} sub/><Row l="마우스 비용" v={`${(m*500*(cgDays()||0)).toLocaleString()}원`} sub/><Row l="랫 비용" v={`${(r*600*(cgDays()||0)).toLocaleString()}원`} sub/><Div/><Row l="장비 수수료(부가세 포함)" v={`${cgFee().toLocaleString()}원`} highlight/></>:<Row l="수수료" v="종료 날짜 입력 후 확정" highlight/>}
               </div>}
               <div style={{display:"flex",gap:8,marginTop:16}}><GBtn label="← 재선택" onClick={()=>setStep("equipment")}/><PBtn label="확인 →" onClick={()=>setStep("confirm")} disabled={!cgValid}/></div>
             </div>
@@ -514,20 +519,21 @@ function App(){
             <div>
               <SecT c="③ 내용을 확인해주세요"/>
               <div style={{background:"#f8fafc",borderRadius:14,padding:18,marginBottom:20,border:"1px solid #e2e8f0"}}>
-                <Row l="업체명" v={cn}/><Row l="담당자" v={wo}/><Row l="장비명" v={eq.name}/>
+                <Row l="업체명" v={cn}/><Row l="담당자" v={wo}/>{ph&&<Row l="휴대폰" v={ph}/>}<Row l="장비명" v={eq.name}/>
                 {eq.type==="short"&&<>
                   {!isL&&<><Row l="시작시간" v={sST}/><Row l="종료시간" v={eST}/><Row l="사용시간" v={`${Math.floor(shMins()/60)}시간 ${shMins()%60}분`} sub/></>}
                   {isL&&<Row l="사용량" v={`${qty}L`}/>}
                   <Div/><Row l="장비 수수료(부가세 포함)" v={`${shFee().toLocaleString()}원`} highlight/>
                 </>}
                 {eq.type==="long"&&<>
-                  <Row l="시작" v={`${sDate} ${sTime}`}/><Row l="종료" v={eDate&&eTime?`${eDate} ${eTime}`:"미정"}/>
+                  {!endOnly&&<><Row l="시작" v={`${sDate} ${sTime}`}/></>}
+                  <Row l="종료" v={eDate&&eTime?`${eDate} ${eTime}`:"미정"}/>
                   {eDate&&eTime&&<Row l="사용시간" v={`${Math.floor(lgMins()/60)}시간 ${lgMins()%60}분`} sub/>}
                   <Div/><Row l="장비 수수료(부가세 포함)" v={eDate&&eTime?`${lgFee().toLocaleString()}원`:"미정"} highlight/>
                 </>}
                 {eq.type==="cage"&&<>
-                  <Row l="시작일" v={sDate}/><Row l="종료일" v={eDate||"미정"}/>
-                  {eDate&&<Row l="사용일수" v={`${cgDays()}일`} sub/>}
+                  {!endOnly&&<Row l="시작일" v={sDate}/>}
+                  <Row l="종료일" v={eDate||"미정"}/>{eDate&&<Row l="사용일수" v={`${cgDays()}일`} sub/>}
                   <Row l="마우스" v={`${m}마리`}/><Row l="랫" v={`${r}마리`}/>
                   <Div/><Row l="장비 수수료(부가세 포함)" v={eDate?`${cgFee().toLocaleString()}원`:"미정"} highlight/>
                 </>}
@@ -539,12 +545,7 @@ function App(){
             </div>
           )}
 
-          {step==="sending"&&(
-            <div style={{textAlign:"center",padding:"20px 0"}}>
-              <div style={{fontSize:36,marginBottom:16}}>⏳</div>
-              <div style={{color:"#0f172a",fontSize:16,fontWeight:600}}>구글 시트에 저장 중...</div>
-            </div>
-          )}
+          {step==="sending"&&<div style={{textAlign:"center",padding:"20px 0"}}><div style={{fontSize:36,marginBottom:16}}>⏳</div><div style={{color:"#0f172a",fontSize:16,fontWeight:600}}>구글 시트에 저장 중...</div></div>}
 
           {step==="done"&&last&&(
             <div style={{textAlign:"center"}}>
@@ -586,9 +587,6 @@ function App(){
     </div>
   );
 }
-
-// isHour, isDay 가 short 폼에서 정의되어있지 않아 undefined 처리
-const isHour = true;
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>

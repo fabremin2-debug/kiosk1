@@ -24,7 +24,7 @@
 <script type="text/babel">
 
 const KIOSK_URL = "https://fabremin2-debug.github.io/kiosk1/";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUzuN_odE2TxvaMDUzefadoVrrv24Q2v_VzwYLrUbSCnkVTaF4WKpTrfY4-kp9zjV8VQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzVRC4ltnSh6SMltl9GVljNqwK-Rm-PIFThSD6X-R4NiNxhYNl8vj0lkB1Y3jYX7HZT3w/exec";
 
 // type: "short"=단기, "long"=장기(Hour,날짜+시간), "cage"=챔버(날짜+마리수)
 const EQUIPMENT = [
@@ -253,8 +253,10 @@ function ReservationPage({onBack}){
   // 예약된 날짜 범위 계산
   const bookedDates = React.useMemo(()=>{
     const set=new Set();
-    reservations.filter(r=>ec&&r.장비명===eq?.name).forEach(r=>{
+    reservations.forEach(r=>{
       if(!r.예약시작일||!r.예약종료일) return;
+      // 장비 선택 안 됐거나 같은 장비면 표시
+      if(ec && eq && r.장비명 !== eq.name) return;
       let cur=new Date(r.예약시작일);
       const end=new Date(r.예약종료일);
       while(cur<=end){ set.add(cur.toISOString().slice(0,10)); cur.setDate(cur.getDate()+1); }
@@ -276,7 +278,9 @@ function ReservationPage({onBack}){
     for(let d=1;d<=daysInMonth;d++){
       const ds=`${year}-${String(month+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
       const past=ds<today, over=ds>maxDate;
-      const booked=isBooked(ds), mine=isInMyRange(ds);
+      const booked=isBooked(ds);
+      // 선택 범위 내에 예약된 날이 있으면 범위 표시 안 함
+      const mine=isInMyRange(ds)&&!booked;
       const disabled=past||over||booked;
       let bg="transparent", color=C.text, border="none";
       if(booked) { bg="#991b1b"; color="#fca5a5"; }

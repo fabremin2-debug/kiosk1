@@ -223,15 +223,27 @@ function App(){
     setRecords(prev => [...prev, record]);
     setStep("sending");
     try {
-      await fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(record)
+      const params = new URLSearchParams({
+        연도: record.연도,
+        날짜: record.날짜,
+        업체명: record.업체명,
+        담당자: record.담당자,
+        장비명: record.장비명,
+        장비코드: record.장비코드,
+        사용시작: record.사용시작,
+        사용종료: record.사용종료,
+        사용시간_분: record.사용시간_분,
+        환산시간: record.환산시간,
+        단가: record.단가,
+        수수료: record.수수료
+      });
+      await fetch(SCRIPT_URL + "?" + params.toString(), {
+        method: "GET",
+        mode: "no-cors"
       });
       setStep("done");
     } catch(err) {
-      setStep("done"); // 전송 실패해도 완료 화면은 표시
+      setStep("done");
     }
   };
 

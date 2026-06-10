@@ -207,17 +207,32 @@ function App(){
     return `${Math.floor(m/60)>0?Math.floor(m/60)+"시간 ":""}${m%60>0?m%60+"분":""}`;
   };
 
-  const handleSubmit=()=>{
-    setRecords(prev=>[...prev,{
-      날짜:new Date().toLocaleDateString("ko-KR"),
-      업체명:companyName,담당자:worker,
-      장비명:selectedEq.name,장비코드:selectedEq.code,
-      사용시작:startTime,사용종료:endTime,
-      사용시간_분:totalMins(),
-      환산시간:(totalMins()/60).toFixed(4),
-      단가:selectedEq.fee,수수료:calcFee()
-    }]);
-    setStep("done");
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5cpXeroNrmcmoM8vOys1Vg_QKzAtHZbpkenfTznvzSkDwL7cZQrscUBej43xzDrK6BA/exec";
+
+  const handleSubmit = async () => {
+    const record = {
+      연도: new Date().getFullYear(),
+      날짜: new Date().toLocaleDateString("ko-KR"),
+      업체명: companyName, 담당자: worker,
+      장비명: selectedEq.name, 장비코드: selectedEq.code,
+      사용시작: startTime, 사용종료: endTime,
+      사용시간_분: totalMins(),
+      환산시간: (totalMins()/60).toFixed(4),
+      단가: selectedEq.fee, 수수료: calcFee()
+    };
+    setRecords(prev => [...prev, record]);
+    setStep("sending");
+    try {
+      await fetch(SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(record)
+      });
+      setStep("done");
+    } catch(err) {
+      setStep("done"); // 전송 실패해도 완료 화면은 표시
+    }
   };
 
   const reset=()=>{
@@ -365,6 +380,15 @@ function App(){
                 <button onClick={()=>setStep("form")} style={{flex:1,padding:"12px",background:"none",border:`1px solid ${C.border}`,color:C.muted,borderRadius:12,fontSize:13,cursor:"pointer"}}>← 수정</button>
                 <button onClick={handleSubmit} style={{flex:2,padding:"14px",borderRadius:12,background:"linear-gradient(135deg,#059669,#10b981)",color:"#fff",border:"none",fontSize:15,fontWeight:700,cursor:"pointer"}}>제출하기 ✓</button>
               </div>
+            </div>
+          )}
+
+          {/* 전송 중 */}
+          {step==="sending"&&(
+            <div style={{textAlign:"center",padding:"20px 0"}}>
+              <div style={{fontSize:40,marginBottom:16}}>⏳</div>
+              <div style={{color:C.text,fontSize:17,fontWeight:600,marginBottom:8}}>구글 시트에 저장 중...</div>
+              <div style={{color:C.muted,fontSize:13}}>잠시만 기다려주세요</div>
             </div>
           )}
 

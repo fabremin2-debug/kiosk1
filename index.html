@@ -197,7 +197,19 @@ function App(){
   const [records,setRecords]=React.useState([]);
 
   const companyName=company==="직접입력"?customCompany:company;
-  const totalMins=()=>(parseInt(usageHour)||0)*60+(parseInt(usageMin)||0);
+  const calcMinsFromTime = (start, end) => {
+    if (!start || !end) return 0;
+    const [sh, sm] = start.split(":").map(Number);
+    const [eh, em] = end.split(":").map(Number);
+    const diff = (eh * 60 + em) - (sh * 60 + sm);
+    return diff > 0 ? diff : 0;
+  };
+
+  const totalMins = () => {
+    const fromTime = calcMinsFromTime(startTime, endTime);
+    if (fromTime > 0) return fromTime;
+    return (parseInt(usageHour)||0)*60+(parseInt(usageMin)||0);
+  };
   const calcFee=()=>selectedEq?Math.ceil((totalMins()/60)*selectedEq.fee):0;
   const formValid=companyName&&worker&&selectedEq&&totalMins()>0;
   const filteredEq=EQUIPMENT.filter(e=>e.name.includes(eqSearch)||e.code.includes(eqSearch));
@@ -352,12 +364,21 @@ function App(){
               </div>
 
               <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6,marginTop:4}}>사용 시간</div>
-              <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:16}}>
-                <input type="number" min="0" value={usageHour} onChange={e=>setUsageHour(e.target.value)} placeholder="0" style={{...inpStyle,marginBottom:0,width:70,textAlign:"center"}}/>
-                <span style={{color:C.muted,fontSize:13}}>시간</span>
-                <input type="number" min="0" max="59" value={usageMin} onChange={e=>setUsageMin(e.target.value)} placeholder="0" style={{...inpStyle,marginBottom:0,width:70,textAlign:"center"}}/>
-                <span style={{color:C.muted,fontSize:13}}>분</span>
-              </div>
+              {calcMinsFromTime(startTime, endTime) > 0 ? (
+                <div style={{background:"#0c2a3f",border:`1px solid ${C.primary}`,borderRadius:10,padding:"11px 14px",marginBottom:14,color:C.primary,fontWeight:600,fontSize:14}}>
+                  ⏱ 자동 계산: {Math.floor(calcMinsFromTime(startTime,endTime)/60)>0?Math.floor(calcMinsFromTime(startTime,endTime)/60)+"시간 ":""}{calcMinsFromTime(startTime,endTime)%60>0?calcMinsFromTime(startTime,endTime)%60+"분":""}
+                </div>
+              ) : (
+                <div>
+                  <div style={{color:C.faint,fontSize:11,marginBottom:8}}>시작/종료 시간 입력 시 자동 계산 · 직접 입력도 가능</div>
+                  <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:16}}>
+                    <input type="number" min="0" value={usageHour} onChange={e=>setUsageHour(e.target.value)} placeholder="0" style={{...inpStyle,marginBottom:0,width:70,textAlign:"center"}}/>
+                    <span style={{color:C.muted,fontSize:13}}>시간</span>
+                    <input type="number" min="0" max="59" value={usageMin} onChange={e=>setUsageMin(e.target.value)} placeholder="0" style={{...inpStyle,marginBottom:0,width:70,textAlign:"center"}}/>
+                    <span style={{color:C.muted,fontSize:13}}>분</span>
+                  </div>
+                </div>
+              )}
 
               {totalMins()>0&&(
                 <div style={{background:C.inputBg,borderRadius:12,padding:"14px 16px",marginBottom:20,border:"1px solid #1e3a5f"}}>

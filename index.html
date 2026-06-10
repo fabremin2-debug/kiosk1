@@ -230,18 +230,23 @@ function ReservationPage({onBack}){
   React.useEffect(()=>{
     if(!ec) return;
     setLoading(true);
+    setReservations([]);
     const eqName=EQUIPMENT.find(e=>e.code===ec)?.name||"";
-    // JSONP 방식으로 CORS 우회
     const cbName="cb_"+Date.now();
     const script=document.createElement("script");
     script.src=SCRIPT_URL+"?action=getReservations&장비명="+encodeURIComponent(eqName)+"&callback="+cbName;
     window[cbName]=(data)=>{
+      console.log("예약현황:", data);
       if(data.result==="success") setReservations(data.data||[]);
       delete window[cbName];
       document.body.removeChild(script);
       setLoading(false);
     };
-    script.onerror=()=>{ setLoading(false); delete window[cbName]; };
+    script.onerror=(e)=>{ 
+      console.log("스크립트 오류:", e);
+      setLoading(false); 
+      delete window[cbName]; 
+    };
     document.body.appendChild(script);
   },[ec]);
 
@@ -437,8 +442,8 @@ function App(){
   return(
     <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:16}}>
       <div style={{width:"100%",maxWidth:520,background:C.card,borderRadius:24,boxShadow:"0 25px 60px rgba(0,0,0,0.5)",overflow:"hidden"}}>
-        <div style={{background:`linear-gradient(135deg,${C.primaryDark},${C.primary})`,padding:"20px 28px"}}>
-          <div style={{fontSize:11,color:"#bae6fd",letterSpacing:2,marginBottom:4}}>춘천바이오산업진흥원</div>
+        <div style={{background:`linear-gradient(135deg,${C.primaryDark},${C.primary})`,padding:"16px 28px"}}>
+          <img src="logo.png" alt="춘천바이오산업진흥원" style={{height:40,marginBottom:8,display:"block",filter:"brightness(0) invert(1)"}}/>
           <div style={{fontSize:20,fontWeight:700,color:"#fff"}}>공유장비 이용 기록 시스템</div>
           <div style={{fontSize:11,color:"#7dd3fc",marginTop:4}}>{toKoDate()}</div>
         </div>

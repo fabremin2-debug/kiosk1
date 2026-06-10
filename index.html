@@ -22,342 +22,388 @@
 <script type="text/babel">
 
 const EQUIPMENT = [
-  { name: "고속냉장원심분리기", code: "A-01", fee: 800 },
-  { name: "고속액체크로마토그래피-12", code: "B-01", fee: 5500 },
-  { name: "고속액체크로마토그래피-13", code: "B-02", fee: 5500 },
-  { name: "고속액체크로마토그래피-14", code: "B-03", fee: 5500 },
-  { name: "초소수처조기-1", code: "C-01", fee: 500 },
-  { name: "초소수처조기-2", code: "C-02", fee: 500 },
-  { name: "항온습동통사육장치-3", code: "D-01", fee: 500 },
-  { name: "항온습동통사육장치-4", code: "D-02", fee: 500 },
-  { name: "동결건조기", code: "E-01", fee: 1200 },
-  { name: "PCR", code: "F-01", fee: 1000 },
+  { name: "자외-가시선분광광도계-1", code: "98B24-99D3A2401", fee: 870 },
+  { name: "진탕배양기-1", code: "98B24-99D3A2201", fee: 160 },
+  { name: "무균대-2", code: "98B24-99D3A2204", fee: 270 },
+  { name: "무균대-3", code: "98B24-99D3A3101-1", fee: 270 },
+  { name: "탁상용 원심분리기-1", code: "98B24-99D3A2302", fee: 200 },
+  { name: "균질기", code: "98B24-99D3A2502", fee: 200 },
+  { name: "배양기-1", code: "98B24-99D3A2207", fee: 100 },
+  { name: "배양기-2", code: "99B24-99D3A3808", fee: 100 },
+  { name: "배양기-3", code: "98B24-99D3A1918", fee: 100 },
+  { name: "초음파장치", code: "98B24-99D3A2503", fee: 250 },
+  { name: "이산화탄소배양기-1", code: "98B24-99D3A2504", fee: 170 },
+  { name: "진공건조기-1", code: "98B24-99D3A1920", fee: 150 },
+  { name: "건조기-1", code: "98B24-99D3A1921-2", fee: 130 },
+  { name: "저온배양기", code: "98B24-99D3A2205", fee: 160 },
+  { name: "저온저장고", code: "98B24-99D3A3204", fee: 650 },
+  { name: "도립현미경-1", code: "98B24-99D3A2507", fee: 230 },
+  { name: "고속원심분리기-2", code: "98B24-99D3A2306", fee: 750 },
+  { name: "마이크로원심분리기-2", code: "98B24-99D3A2307", fee: 210 },
+  { name: "무균대-4", code: "98B24-99D3A2508", fee: 300 },
+  { name: "무균대-5", code: "98B24-99D3A2509", fee: 300 },
+  { name: "무균대-6", code: "98B24-99D3A3101", fee: 300 },
+  { name: "수분측정기-1", code: "98B24-00D3A2401", fee: 220 },
+  { name: "초음파세척기-1", code: "98B24-00D3A2502", fee: 150 },
+  { name: "초음파세척기-2", code: "98B24-00D3A3703", fee: 150 },
+  { name: "형광현미경", code: "98B24-00D3A2803", fee: 3890 },
+  { name: "가스질량분석기", code: "98B24-00D3A2402", fee: 4070 },
+  { name: "단백질정제장치-1", code: "98B24-00D3A3701", fee: 4520 },
+  { name: "고속액체크로마토그래프-2", code: "98B24-00D3A2403", fee: 5000 },
+  { name: "연쇄중합반응기-1", code: "98B24-00D3A2404", fee: 240 },
+  { name: "당분석시스템", code: "98B24-00D3A1902", fee: 910 },
+  { name: "감압회전건조장치", code: "98B24-00D3A3702", fee: 880 },
+  { name: "자외-가시선분광광도계-5", code: "98B24-01D3A2401", fee: 830 },
+  { name: "초저온냉동고-3", code: "98B24-01D3A1101", fee: 150 },
+  { name: "초고속원심분리기-1", code: "98B24-01D3A2301", fee: 2980 },
+  { name: "자동순환분취크로마토그래프", code: "98B24-01D3A3701", fee: 3450 },
+  { name: "가스크로마토그래프-2", code: "98B24-01D3A3703", fee: 2230 },
+  { name: "편광위상차현미경", code: "98B24-01D3A2503", fee: 3920 },
+  { name: "냉각트랩장치-1", code: "98B24-01D3A1904", fee: 270 },
+  { name: "냉각트랩장치-2", code: "98B24-01D3A3803-1", fee: 270 },
+  { name: "증기화 광산란 검출기", code: "98B24-01D3A2402", fee: 740 },
+  { name: "건조기-2", code: "98B24-01D3A3804", fee: 460 },
+  { name: "회전농축기-4", code: "12CBF-12D3A3201", fee: 550 },
+  { name: "회전배양기", code: "98B24-01D3A3806", fee: 400 },
+  { name: "자외선/가시광선 검지기", code: "98B24-02D3A2203", fee: 1960 },
+  { name: "실시간중합효소 연쇄반응기-1", code: "Venture-02D3A2401", fee: 2120 },
+  { name: "이온 크로마토그래프", code: "Venture-02D3A2201", fee: 1270 },
+  { name: "퓨리에변환 적외선 분광기", code: "Venture-02D3A2903", fee: 5200 },
+  { name: "전해분석기", code: "02A19-02D3A8301", fee: 1240 },
+  { name: "비디오현미경시스템", code: "02A19-02D3A2501", fee: 420 },
+  { name: "바이오크로마토그래프", code: "02A19-02D3A2401", fee: 3530 },
+  { name: "자동세포생육측정기", code: "02A19-02D3A8302", fee: 2160 },
+  { name: "고속원심분리기-3", code: "02A19-02D3A2301", fee: 950 },
+  { name: "정량분석기", code: "02A19-02D3A7301", fee: 940 },
+  { name: "정제분석시스템", code: "02A19-02D3A8303", fee: 690 },
+  { name: "마이크로원심분리기-4", code: "02A19-02D3A2302", fee: 250 },
+  { name: "마이크로원심분리기-5", code: "02A19-02D3A2901", fee: 250 },
+  { name: "고속원심분리기-4", code: "02A19-03D3A7201", fee: 800 },
+  { name: "디지털 카메라 시스템", code: "02A19-03D3A4801", fee: 450 },
+  { name: "수분측정기-2", code: "02A19-03D3A2402", fee: 160 },
+  { name: "피부측정통합장치", code: "02A19-03D3A2701", fee: 3430 },
+  { name: "자외-가시선분광광도계-7", code: "02A19-03D3A6704", fee: 320 },
+  { name: "젤 이미지분석기", code: "02A19-03D3A6712", fee: 630 },
+  { name: "고속액체크로마토그래프-4", code: "02A19-03D3A6715", fee: 5000 },
+  { name: "고속원심분리기-5", code: "02A19-03D3A6714", fee: 2580 },
+  { name: "고압멸균기-3", code: "02A19-04D3A6701", fee: 250 },
+  { name: "초고속원심분리기-2", code: "02A19-04D3A6702", fee: 4340 },
+  { name: "IR 가스 분석기", code: "02A19-04D3A3701", fee: 840 },
+  { name: "고속액체크로마토그래프-5", code: "02A19-04D3A6704", fee: 5000 },
+  { name: "대용량고속원심분리기", code: "02A19-04D3A6706", fee: 3530 },
+  { name: "액체질량분석기-2", code: "02A19-06D3A3701", fee: 5000 },
+  { name: "입도분석기", code: "02A19-06D3A3106", fee: 2160 },
+  { name: "모세관 전기이동장치", code: "02A19-06D3A2901", fee: 3840 },
+  { name: "고압멸균기-5", code: "02A19-06D3A3108", fee: 1370 },
+  { name: "항온항습기-1", code: "02A19-06D3A3109", fee: 790 },
+  { name: "공촛점레이저주사현미경", code: "02A19-07D3A2901", fee: 6000 },
+  { name: "슬라이드자동세정장치", code: "02A19-07D3A3801", fee: 50 },
+  { name: "단백질칩제조기-2", code: "02A19-07D3A3802", fee: 2480 },
+  { name: "진공건조기-2", code: "02A19-07D3A3803", fee: 780 },
+  { name: "액체크로마토그래프이온트랩질량분석기", code: "02A19-07D3A3804", fee: 16030 },
+  { name: "효소면역측정기-4", code: "08A19-09D3A2501", fee: 2960 },
+  { name: "자동하이브리드배양기", code: "08A19-09D3A2601", fee: 2010 },
+  { name: "이산화탄소배양기-6", code: "08A19-09D3A2502", fee: 400 },
+  { name: "도립현미경-2", code: "08A19-09D3A2503", fee: 440 },
+  { name: "항온항습기-2", code: "08A19-09D3A2603", fee: 790 },
+  { name: "마이크로어레이분석장치-4", code: "08A19-09D3A2609", fee: 4800 },
+  { name: "실시간세포분석기", code: "08A19-09D3A2507", fee: 3920 },
+  { name: "제빙기-3", code: "16CBF-16D3A3901", fee: 320 },
+  { name: "초고속원심분리기-3", code: "08A19-09D3A2801", fee: 2500 },
+  { name: "유세포분석기", code: "08A19-09D3A3801", fee: 2820 },
+  { name: "가스크로마토그래프-3", code: "08A19-09D3A3702", fee: 4410 },
+  { name: "고속액체크로마토그래프-8", code: "08A19-09D3A2605", fee: 5000 },
+  { name: "화학발광이미지분석장치-2", code: "08A19-09D3A2607", fee: 2260 },
+  { name: "자동크로마토그래프", code: "08A19-09D3A2608", fee: 1650 },
+  { name: "항온항습동물사육챔버-2", code: "08A19-09D3A2610", fee: 500 },
+  { name: "항온항습동물사육챔버-3", code: "08A19-09D3A2611", fee: 500 },
+  { name: "초저온냉동고-5", code: "08A19-10D3A3201", fee: 690 },
+  { name: "자동발광측정기", code: "08A19-10D3A3101", fee: 1880 },
+  { name: "가스크로마토그래프-4", code: "08A19-10D3A3202", fee: 2360 },
+  { name: "고속액체크로마토그래프-9", code: "08A19-10D3A3203", fee: 5000 },
+  { name: "실험실용배기기-7", code: "08A19-10D3A2901", fee: 180 },
+  { name: "실시간중합효소연쇄반응기-2", code: "08A19-11D3A3102", fee: 2450 },
+  { name: "혈액생화학분석기", code: "08A19-11D3A3101", fee: 4260 },
+  { name: "이산화탄소배양기-7", code: "08A19-11D3A3202", fee: 470 },
+  { name: "고압멸균기-9", code: "08A19-11D3A4901", fee: 270 },
+  { name: "자외선 발산기", code: "08A19-11D3A3201", fee: 110 },
+  { name: "드라이시스템-1", code: "02A19-03D3A5617", fee: 460 },
+  { name: "항온항습동물사육챔버-4", code: "20SCBF-22D3A7642", fee: 500 },
+  { name: "고속액체크로마토그래프-11", code: "15CBF-15D3A2201", fee: 5500 },
+  { name: "고속액체크로마토그래프-12", code: "15CBF-17D3A2201", fee: 5500 },
+  { name: "고속액체크로마토그래프-13", code: "15CBF-17D3A2202", fee: 5500 },
+  { name: "고속액체크로마토그래프-14", code: "15CBF-17D3A2203", fee: 5500 },
+  { name: "고속액체크로마토그래프-15", code: "15CBF-17D3A2204", fee: 5500 },
+  { name: "가스질량분석기-1", code: "15CBF-17D3A2205", fee: 6000 },
+  { name: "고속액체크로마토그래프-10", code: "17CBF-18D3A2111", fee: 5500 },
+  { name: "진탕배양기-7", code: "16CBF-16D3A3902", fee: 160 },
+  { name: "진탕배양기-8", code: "16CBF-16D3A3903", fee: 160 },
 ];
 
 const COMPANIES = [
-  "(주)레이포유바이오시스테크",
-  "(주)바이오셀릭스",
-  "(주)다이셀",
-  "베롤머",
-  "(주)바이오텍",
-  "(주)뉴바이오옵텍",
-  "(주)뉴핸드케어",
-  "(주)뉴사바이오텍",
-  "직접입력",
+  "㈜청도제약","㈜다럼앤바이오","㈜압타머사이언스 씨알오(CRO)센터","코아스템켐온㈜",
+  "㈜유바이오로직스","㈜팜스토리","메디허브바이오㈜","㈜화진바이오코스메틱",
+  "㈜이뮨팜","㈜블루진","㈜앱틀라스","㈜더밸류바이오텍","㈜엠텍","㈜청아굿푸드",
+  "㈜리포바이오메드","㈜비엔지","㈜이노제닉스","㈜무무코스메틱","㈜아리바이오",
+  "㈜하울바이오","㈜콤비메드","㈜휴피트","㈜에이치앤비","㈜뉴젠헬스케어",
+  "주식회사 강원수출","㈜앱셀","㈜코리아베스트원","베름㈜","슈미트헬스코리아(유)",
+  "㈜파나큐라","㈜에스제이인터내셔널","㈜퍼펙트바이옴","강원퍼퓸알케미㈜",
+  "㈜유스바이오글로벌","㈜세찬","㈜마이셀릭스","㈜제이제이웍스","㈜보름바이오",
+  "에스알이서비스㈜","디제이에프씨㈜","㈜비노시스","노블비타㈜","이엘메드㈜",
+  "엘바이오로직스㈜","㈜마이밸류","비프로스㈜","㈜알엠에쓰플랫폼","㈜살리타",
+  "㈜케어웜","㈜하임바이오텍","㈜유씨아이테라퓨틱스","㈜유니크닷","셀모티브 주식회사",
+  "주식회사 비네이처바이오랩","㈜넥솔바이오팜","㈜팬바이오텍","㈜오지텍","㈜머쉬텍",
+  "바디텍메드㈜","㈜메디안디노스틱","화인코㈜","㈜에코비젼","서림바이오㈜",
+  "㈜래디안","㈜폴리스타","㈜아탑","㈜에버스프링","한일인삼산업㈜","삼성생약(주)",
+  "㈜테코스","㈜세바바이오텍","㈜애드바이오텍","주영엔에스㈜","㈜누림",
+  "㈜바이오셀트란","jw크레아젠㈜","㈜이뮨메드","㈜티앤아이","㈜에코비즈넷",
+  "㈜레인보우바이오테크","㈜메디언스","㈜에스티알바이오텍","㈜리제론",
+  "㈜바이오메트릭스 테크놀로지","직접입력"
 ];
 
 const C = {
-  bg: "#0f172a", card: "#1e293b", border: "#334155",
-  primary: "#0ea5e9", primaryDark: "#1d4ed8",
-  text: "#e2e8f0", muted: "#94a3b8", faint: "#64748b",
-  success: "#10b981", inputBg: "#0f172a",
+  bg:"#0f172a", card:"#1e293b", border:"#334155",
+  primary:"#0ea5e9", primaryDark:"#1d4ed8",
+  text:"#e2e8f0", muted:"#94a3b8", faint:"#64748b",
+  success:"#10b981", inputBg:"#0f172a"
 };
 
-const today = () => new Date().toLocaleDateString("ko-KR", {
-  year: "numeric", month: "long", day: "numeric", weekday: "short"
-});
+const today = () => new Date().toLocaleDateString("ko-KR",{year:"numeric",month:"long",day:"numeric",weekday:"short"});
+const nowStr = () => new Date().toTimeString().slice(0,5);
 
-const nowStr = () => new Date().toTimeString().slice(0, 5);
-
-function Row({ label, value, highlight }) {
-  return (
-    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8 }}>
-      <span style={{ color:C.faint, fontSize:13 }}>{label}</span>
-      <span style={{ color: highlight ? C.primary : C.text, fontWeight: highlight ? 700 : 500, fontSize:13 }}>{value}</span>
+function Row({label,value,highlight}){
+  return(
+    <div style={{display:"flex",justifyContent:"space-between",marginBottom:8}}>
+      <span style={{color:C.faint,fontSize:13}}>{label}</span>
+      <span style={{color:highlight?C.primary:C.text,fontWeight:highlight?700:500,fontSize:13}}>{value}</span>
     </div>
   );
 }
 
-function Btn({ children, onClick, color }) {
-  const bg = color === "green"
-    ? "linear-gradient(135deg,#059669,#10b981)"
-    : `linear-gradient(135deg,${C.primaryDark},${C.primary})`;
-  return (
-    <button onClick={onClick} style={{
-      width:"100%", padding:"15px", background:bg,
-      color:"#fff", border:"none", borderRadius:12,
-      fontSize:15, fontWeight:700, cursor:"pointer"
-    }}>{children}</button>
-  );
-}
+const selStyle={width:"100%",padding:"11px 12px",borderRadius:10,background:C.inputBg,border:`2px solid ${C.border}`,color:C.text,fontSize:13,marginBottom:14,outline:"none"};
+const inpStyle={width:"100%",padding:"11px 12px",borderRadius:10,background:C.inputBg,border:`2px solid ${C.border}`,color:C.text,fontSize:13,marginBottom:14,outline:"none"};
 
-function GhostBtn({ children, onClick }) {
-  return (
-    <button onClick={onClick} style={{
-      width:"100%", padding:"12px", background:"none",
-      border:`1px solid ${C.border}`, color:C.muted,
-      borderRadius:12, fontSize:14, cursor:"pointer"
-    }}>{children}</button>
-  );
-}
+function App(){
+  const [step,setStep]=React.useState("home");
+  const [eqSearch,setEqSearch]=React.useState("");
+  const [selectedEq,setSelectedEq]=React.useState(null);
+  const [company,setCompany]=React.useState("");
+  const [customCompany,setCustomCompany]=React.useState("");
+  const [worker,setWorker]=React.useState("");
+  const [usageHour,setUsageHour]=React.useState("");
+  const [usageMin,setUsageMin]=React.useState("");
+  const [startTime,setStartTime]=React.useState("");
+  const [endTime,setEndTime]=React.useState("");
+  const [records,setRecords]=React.useState([]);
 
-function Label({ children, mt }) {
-  return (
-    <div style={{ color:C.muted, fontSize:12, fontWeight:600, marginBottom:6, marginTop: mt||0 }}>
-      {children}
-    </div>
-  );
-}
+  const companyName=company==="직접입력"?customCompany:company;
+  const totalMins=()=>(parseInt(usageHour)||0)*60+(parseInt(usageMin)||0);
+  const calcFee=()=>selectedEq?Math.ceil((totalMins()/60)*selectedEq.fee):0;
+  const formValid=companyName&&worker&&selectedEq&&totalMins()>0;
+  const filteredEq=EQUIPMENT.filter(e=>e.name.includes(eqSearch)||e.code.includes(eqSearch));
 
-function SectionTitle({ children }) {
-  return (
-    <div style={{ color:"#7dd3fc", fontSize:12, fontWeight:700, letterSpacing:1, marginBottom:14 }}>
-      {children}
-    </div>
-  );
-}
+  const minsLabel=()=>{
+    const m=totalMins();
+    return `${Math.floor(m/60)>0?Math.floor(m/60)+"시간 ":""}${m%60>0?m%60+"분":""}`;
+  };
 
-const selStyle = {
-  width:"100%", padding:"11px 12px", borderRadius:10,
-  background:C.inputBg, border:`2px solid ${C.border}`,
-  color:C.text, fontSize:13, marginBottom:14, outline:"none"
-};
-
-const inpStyle = {
-  width:"100%", padding:"11px 12px", borderRadius:10,
-  background:C.inputBg, border:`2px solid ${C.border}`,
-  color:C.text, fontSize:13, marginBottom:14, outline:"none"
-};
-
-function App() {
-  const [step, setStep] = React.useState("home");
-  const [selectedEq, setSelectedEq] = React.useState(null);
-  const [company, setCompany] = React.useState("");
-  const [customCompany, setCustomCompany] = React.useState("");
-  const [worker, setWorker] = React.useState("");
-  const [usageHour, setUsageHour] = React.useState("");
-  const [usageMin, setUsageMin] = React.useState("");
-  const [startTime, setStartTime] = React.useState("");
-  const [endTime, setEndTime] = React.useState("");
-  const [records, setRecords] = React.useState([]);
-
-  const companyName = company === "직접입력" ? customCompany : company;
-  const totalMins = () => (parseInt(usageHour)||0)*60 + (parseInt(usageMin)||0);
-  const calcFee = () => selectedEq ? Math.ceil((totalMins()/60)*selectedEq.fee) : 0;
-  const formValid = companyName && worker && selectedEq && totalMins() > 0;
-
-  const handleSubmit = () => {
-    const record = {
-      날짜: new Date().toLocaleDateString("ko-KR"),
-      업체명: companyName, 담당자: worker,
-      장비명: selectedEq.name, 장비코드: selectedEq.code,
-      사용시작: startTime, 사용종료: endTime,
-      사용시간_분: totalMins(),
-      환산시간: (totalMins()/60).toFixed(4),
-      단가: selectedEq.fee, 수수료: calcFee(),
-    };
-    setRecords(prev => [...prev, record]);
+  const handleSubmit=()=>{
+    setRecords(prev=>[...prev,{
+      날짜:new Date().toLocaleDateString("ko-KR"),
+      업체명:companyName,담당자:worker,
+      장비명:selectedEq.name,장비코드:selectedEq.code,
+      사용시작:startTime,사용종료:endTime,
+      사용시간_분:totalMins(),
+      환산시간:(totalMins()/60).toFixed(4),
+      단가:selectedEq.fee,수수료:calcFee()
+    }]);
     setStep("done");
   };
 
-  const reset = () => {
-    setStep("home"); setSelectedEq(null);
-    setCompany(""); setCustomCompany(""); setWorker("");
-    setUsageHour(""); setUsageMin(""); setStartTime(""); setEndTime("");
+  const reset=()=>{
+    setStep("home");setSelectedEq(null);setEqSearch("");
+    setCompany("");setCustomCompany("");setWorker("");
+    setUsageHour("");setUsageMin("");setStartTime("");setEndTime("");
   };
 
-  const minsLabel = () => {
-    const m = totalMins();
-    return `${Math.floor(m/60)>0 ? Math.floor(m/60)+"시간 " : ""}${m%60>0 ? m%60+"분" : ""}`;
-  };
-
-  return (
-    <div style={{ minHeight:"100vh", background:C.bg, display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:16 }}>
-      <div style={{ width:"100%", maxWidth:500, background:C.card, borderRadius:24, boxShadow:"0 25px 60px rgba(0,0,0,0.5)", overflow:"hidden" }}>
+  return(
+    <div style={{minHeight:"100vh",background:C.bg,display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:16}}>
+      <div style={{width:"100%",maxWidth:520,background:C.card,borderRadius:24,boxShadow:"0 25px 60px rgba(0,0,0,0.5)",overflow:"hidden"}}>
 
         {/* 헤더 */}
-        <div style={{ background:`linear-gradient(135deg,${C.primaryDark},${C.primary})`, padding:"20px 28px" }}>
-          <div style={{ fontSize:11, color:"#bae6fd", letterSpacing:2, marginBottom:4 }}>춘천바이오산업진흥원</div>
-          <div style={{ fontSize:20, fontWeight:700, color:"#fff" }}>공유장비 이용 기록 시스템</div>
-          <div style={{ fontSize:11, color:"#7dd3fc", marginTop:4 }}>{today()}</div>
+        <div style={{background:`linear-gradient(135deg,${C.primaryDark},${C.primary})`,padding:"20px 28px"}}>
+          <div style={{fontSize:11,color:"#bae6fd",letterSpacing:2,marginBottom:4}}>춘천바이오산업진흥원</div>
+          <div style={{fontSize:20,fontWeight:700,color:"#fff"}}>공유장비 이용 기록 시스템</div>
+          <div style={{fontSize:11,color:"#7dd3fc",marginTop:4}}>{today()}</div>
         </div>
 
-        <div style={{ padding:"24px 24px 28px" }}>
+        <div style={{padding:"24px 24px 28px"}}>
 
           {/* HOME */}
-          {step === "home" && (
-            <div style={{ textAlign:"center" }}>
-              <div style={{ fontSize:52, marginBottom:16 }}>🔬</div>
-              <div style={{ color:C.text, fontSize:17, fontWeight:600, marginBottom:8 }}>장비 이용을 시작하시겠습니까?</div>
-              <div style={{ color:C.muted, fontSize:13, marginBottom:28 }}>아래 버튼을 눌러 이용 기록을 입력해주세요</div>
-              <Btn onClick={() => setStep("equipment")}>이용 기록 입력 시작</Btn>
-              {records.length > 0 && (
-                <button onClick={() => setStep("records")} style={{
-                  marginTop:12, background:"none", border:`1px solid ${C.border}`,
-                  color:C.muted, borderRadius:10, padding:"10px 20px",
-                  cursor:"pointer", fontSize:13, width:"100%"
-                }}>오늘 기록 보기 ({records.length}건)</button>
+          {step==="home"&&(
+            <div style={{textAlign:"center"}}>
+              <div style={{fontSize:52,marginBottom:16}}>🔬</div>
+              <div style={{color:C.text,fontSize:17,fontWeight:600,marginBottom:8}}>장비 이용을 시작하시겠습니까?</div>
+              <div style={{color:C.muted,fontSize:13,marginBottom:28}}>아래 버튼을 눌러 이용 기록을 입력해주세요</div>
+              <button onClick={()=>setStep("equipment")} style={{width:"100%",padding:"15px",background:`linear-gradient(135deg,${C.primaryDark},${C.primary})`,color:"#fff",border:"none",borderRadius:12,fontSize:15,fontWeight:700,cursor:"pointer"}}>
+                이용 기록 입력 시작
+              </button>
+              {records.length>0&&(
+                <button onClick={()=>setStep("records")} style={{marginTop:12,background:"none",border:`1px solid ${C.border}`,color:C.muted,borderRadius:10,padding:"10px 20px",cursor:"pointer",fontSize:13,width:"100%"}}>
+                  오늘 기록 보기 ({records.length}건)
+                </button>
               )}
             </div>
           )}
 
           {/* 장비 선택 */}
-          {step === "equipment" && (
+          {step==="equipment"&&(
             <div>
-              <SectionTitle>① 장비를 선택하세요</SectionTitle>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:8, marginBottom:20 }}>
-                {EQUIPMENT.map(eq => (
-                  <button key={eq.code} onClick={() => { setSelectedEq(eq); setStep("form"); }} style={{
-                    padding:"14px 10px", borderRadius:12,
-                    border:`2px solid ${C.border}`, background:C.inputBg,
-                    color:C.text, cursor:"pointer", textAlign:"left"
+              <div style={{color:"#7dd3fc",fontSize:12,fontWeight:700,letterSpacing:1,marginBottom:14}}>① 장비를 선택하세요</div>
+              <input value={eqSearch} onChange={e=>setEqSearch(e.target.value)}
+                placeholder="🔍 장비명 또는 코드 검색"
+                style={{...inpStyle,marginBottom:12}} />
+              <div style={{maxHeight:360,overflowY:"auto",display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:16}}>
+                {filteredEq.map(eq=>(
+                  <button key={eq.code} onClick={()=>{setSelectedEq(eq);setStep("form");}} style={{
+                    padding:"12px 10px",borderRadius:12,
+                    border:`2px solid ${C.border}`,background:C.inputBg,
+                    color:C.text,cursor:"pointer",textAlign:"left"
                   }}>
-                    <div style={{ fontSize:12, fontWeight:600, marginBottom:4 }}>{eq.name}</div>
-                    <div style={{ fontSize:11, color:C.muted }}>{eq.code}</div>
-                    <div style={{ fontSize:12, color:C.primary, marginTop:4 }}>{eq.fee.toLocaleString()}원/h</div>
+                    <div style={{fontSize:12,fontWeight:600,marginBottom:3,lineHeight:1.3}}>{eq.name}</div>
+                    <div style={{fontSize:10,color:C.muted,marginBottom:3}}>{eq.code}</div>
+                    <div style={{fontSize:12,color:C.primary}}>{eq.fee.toLocaleString()}원/h</div>
                   </button>
                 ))}
+                {filteredEq.length===0&&<div style={{color:C.muted,fontSize:13,padding:"20px 0",gridColumn:"1/-1",textAlign:"center"}}>검색 결과 없음</div>}
               </div>
-              <GhostBtn onClick={() => setStep("home")}>← 뒤로</GhostBtn>
+              <button onClick={()=>setStep("home")} style={{width:"100%",padding:"12px",background:"none",border:`1px solid ${C.border}`,color:C.muted,borderRadius:12,fontSize:14,cursor:"pointer"}}>← 뒤로</button>
             </div>
           )}
 
           {/* 입력 폼 */}
-          {step === "form" && selectedEq && (
+          {step==="form"&&selectedEq&&(
             <div>
-              <div style={{ background:"#0c2a3f", border:`1px solid ${C.primary}`, borderRadius:12, padding:"12px 16px", marginBottom:20, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+              <div style={{background:"#0c2a3f",border:`1px solid ${C.primary}`,borderRadius:12,padding:"12px 16px",marginBottom:20,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <div>
-                  <div style={{ color:C.primary, fontSize:11, marginBottom:2 }}>선택된 장비</div>
-                  <div style={{ color:C.text, fontWeight:700, fontSize:15 }}>{selectedEq.name}</div>
+                  <div style={{color:C.primary,fontSize:11,marginBottom:2}}>선택된 장비</div>
+                  <div style={{color:C.text,fontWeight:700,fontSize:14}}>{selectedEq.name}</div>
+                  <div style={{color:C.muted,fontSize:11,marginTop:2}}>{selectedEq.code}</div>
                 </div>
-                <div style={{ color:C.primary, fontSize:13, fontWeight:600 }}>{selectedEq.fee.toLocaleString()}원/h</div>
+                <div style={{color:C.primary,fontSize:13,fontWeight:600,whiteSpace:"nowrap"}}>{selectedEq.fee.toLocaleString()}원/h</div>
               </div>
 
-              <SectionTitle>② 이용 정보를 입력하세요</SectionTitle>
+              <div style={{color:"#7dd3fc",fontSize:12,fontWeight:700,letterSpacing:1,marginBottom:14}}>② 이용 정보 입력</div>
 
-              <Label>업체명</Label>
-              <select value={company} onChange={e => setCompany(e.target.value)} style={selStyle}>
+              <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>업체명</div>
+              <select value={company} onChange={e=>setCompany(e.target.value)} style={selStyle}>
                 <option value="">선택하세요</option>
-                {COMPANIES.map(c => <option key={c} value={c}>{c}</option>)}
+                {COMPANIES.map(c=><option key={c} value={c}>{c}</option>)}
               </select>
-              {company === "직접입력" && (
-                <input value={customCompany} onChange={e => setCustomCompany(e.target.value)}
-                  placeholder="업체명 직접 입력" style={inpStyle} />
+              {company==="직접입력"&&(
+                <input value={customCompany} onChange={e=>setCustomCompany(e.target.value)} placeholder="업체명 직접 입력" style={inpStyle}/>
               )}
 
-              <Label>담당자명</Label>
-              <input value={worker} onChange={e => setWorker(e.target.value)}
-                placeholder="성함을 입력하세요" style={inpStyle} />
+              <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>담당자명</div>
+              <input value={worker} onChange={e=>setWorker(e.target.value)} placeholder="성함을 입력하세요" style={inpStyle}/>
 
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
                 <div>
-                  <Label>시작 시간</Label>
-                  <div style={{ display:"flex", gap:6 }}>
-                    <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)}
-                      style={{ ...inpStyle, marginBottom:0, flex:1 }} />
-                    <button onClick={() => setStartTime(nowStr())} style={{ padding:"0 8px", borderRadius:8, background:"#1e3a5f", border:"none", color:"#7dd3fc", fontSize:11, cursor:"pointer", marginBottom:14 }}>지금</button>
+                  <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>시작 시간</div>
+                  <div style={{display:"flex",gap:6}}>
+                    <input type="time" value={startTime} onChange={e=>setStartTime(e.target.value)} style={{...inpStyle,marginBottom:0,flex:1}}/>
+                    <button onClick={()=>setStartTime(nowStr())} style={{padding:"0 8px",borderRadius:8,background:"#1e3a5f",border:"none",color:"#7dd3fc",fontSize:11,cursor:"pointer",marginBottom:14}}>지금</button>
                   </div>
                 </div>
                 <div>
-                  <Label>종료 시간</Label>
-                  <div style={{ display:"flex", gap:6 }}>
-                    <input type="time" value={endTime} onChange={e => setEndTime(e.target.value)}
-                      style={{ ...inpStyle, marginBottom:0, flex:1 }} />
-                    <button onClick={() => setEndTime(nowStr())} style={{ padding:"0 8px", borderRadius:8, background:"#1e3a5f", border:"none", color:"#7dd3fc", fontSize:11, cursor:"pointer", marginBottom:14 }}>지금</button>
+                  <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6}}>종료 시간</div>
+                  <div style={{display:"flex",gap:6}}>
+                    <input type="time" value={endTime} onChange={e=>setEndTime(e.target.value)} style={{...inpStyle,marginBottom:0,flex:1}}/>
+                    <button onClick={()=>setEndTime(nowStr())} style={{padding:"0 8px",borderRadius:8,background:"#1e3a5f",border:"none",color:"#7dd3fc",fontSize:11,cursor:"pointer",marginBottom:14}}>지금</button>
                   </div>
                 </div>
               </div>
 
-              <Label mt={4}>사용 시간</Label>
-              <div style={{ display:"flex", gap:8, alignItems:"center", marginBottom:16 }}>
-                <input type="number" min="0" value={usageHour} onChange={e => setUsageHour(e.target.value)}
-                  placeholder="0" style={{ ...inpStyle, marginBottom:0, width:70, textAlign:"center" }} />
-                <span style={{ color:C.muted, fontSize:13 }}>시간</span>
-                <input type="number" min="0" max="59" value={usageMin} onChange={e => setUsageMin(e.target.value)}
-                  placeholder="0" style={{ ...inpStyle, marginBottom:0, width:70, textAlign:"center" }} />
-                <span style={{ color:C.muted, fontSize:13 }}>분</span>
+              <div style={{color:C.muted,fontSize:12,fontWeight:600,marginBottom:6,marginTop:4}}>사용 시간</div>
+              <div style={{display:"flex",gap:8,alignItems:"center",marginBottom:16}}>
+                <input type="number" min="0" value={usageHour} onChange={e=>setUsageHour(e.target.value)} placeholder="0" style={{...inpStyle,marginBottom:0,width:70,textAlign:"center"}}/>
+                <span style={{color:C.muted,fontSize:13}}>시간</span>
+                <input type="number" min="0" max="59" value={usageMin} onChange={e=>setUsageMin(e.target.value)} placeholder="0" style={{...inpStyle,marginBottom:0,width:70,textAlign:"center"}}/>
+                <span style={{color:C.muted,fontSize:13}}>분</span>
               </div>
 
-              {totalMins() > 0 && (
-                <div style={{ background:C.inputBg, borderRadius:12, padding:"14px 16px", marginBottom:20, border:"1px solid #1e3a5f" }}>
-                  <Row label="사용시간" value={minsLabel()} />
-                  <Row label="환산시간" value={`${(totalMins()/60).toFixed(4)}h`} />
-                  <Row label="장비 수수료" value={`${calcFee().toLocaleString()}원`} highlight />
+              {totalMins()>0&&(
+                <div style={{background:C.inputBg,borderRadius:12,padding:"14px 16px",marginBottom:20,border:"1px solid #1e3a5f"}}>
+                  <Row label="사용시간" value={minsLabel()}/>
+                  <Row label="환산시간" value={`${(totalMins()/60).toFixed(4)}h`}/>
+                  <Row label="내부 수수료" value={`${calcFee().toLocaleString()}원`} highlight/>
                 </div>
               )}
 
-              <div style={{ display:"flex", gap:8 }}>
-                <button onClick={() => setStep("equipment")} style={{
-                  flex:1, padding:"12px", background:"none",
-                  border:`1px solid ${C.border}`, color:C.muted,
-                  borderRadius:12, fontSize:13, cursor:"pointer"
-                }}>← 장비 재선택</button>
-                <button disabled={!formValid} onClick={() => setStep("confirm")} style={{
-                  flex:2, padding:"14px", borderRadius:12,
-                  background: formValid ? `linear-gradient(135deg,${C.primaryDark},${C.primary})` : C.border,
-                  color: formValid ? "#fff" : C.faint,
-                  border:"none", fontSize:15, fontWeight:700,
-                  cursor: formValid ? "pointer" : "not-allowed"
-                }}>확인 →</button>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={()=>setStep("equipment")} style={{flex:1,padding:"12px",background:"none",border:`1px solid ${C.border}`,color:C.muted,borderRadius:12,fontSize:13,cursor:"pointer"}}>← 재선택</button>
+                <button disabled={!formValid} onClick={()=>setStep("confirm")} style={{flex:2,padding:"14px",borderRadius:12,background:formValid?`linear-gradient(135deg,${C.primaryDark},${C.primary})`:C.border,color:formValid?"#fff":C.faint,border:"none",fontSize:15,fontWeight:700,cursor:formValid?"pointer":"not-allowed"}}>확인 →</button>
               </div>
             </div>
           )}
 
           {/* 확인 */}
-          {step === "confirm" && (
+          {step==="confirm"&&(
             <div>
-              <SectionTitle>③ 내용을 확인해주세요</SectionTitle>
-              <div style={{ background:C.inputBg, borderRadius:14, padding:"18px", marginBottom:20 }}>
+              <div style={{color:"#7dd3fc",fontSize:12,fontWeight:700,letterSpacing:1,marginBottom:14}}>③ 내용을 확인해주세요</div>
+              <div style={{background:C.inputBg,borderRadius:14,padding:"18px",marginBottom:20}}>
                 {[
-                  ["업체명", companyName], ["담당자", worker],
-                  ["장비명", selectedEq?.name], ["장비코드", selectedEq?.code],
-                  ["시작시간", startTime||"-"], ["종료시간", endTime||"-"],
-                  ["사용시간", minsLabel()],
-                  ["환산시간", `${(totalMins()/60).toFixed(4)}h`],
-                  ["장비 수수료", `${calcFee().toLocaleString()}원`],
-                ].map(([k,v]) => <Row key={k} label={k} value={v} highlight={k==="장비 수수료"} />)}
+                  ["업체명",companyName],["담당자",worker],
+                  ["장비명",selectedEq?.name],["장비코드",selectedEq?.code],
+                  ["시작시간",startTime||"-"],["종료시간",endTime||"-"],
+                  ["사용시간",minsLabel()],
+                  ["환산시간",`${(totalMins()/60).toFixed(4)}h`],
+                  ["내부 수수료",`${calcFee().toLocaleString()}원`],
+                ].map(([k,v])=><Row key={k} label={k} value={v} highlight={k==="내부 수수료"}/>)}
               </div>
-              <div style={{ display:"flex", gap:8 }}>
-                <button onClick={() => setStep("form")} style={{
-                  flex:1, padding:"12px", background:"none",
-                  border:`1px solid ${C.border}`, color:C.muted,
-                  borderRadius:12, fontSize:13, cursor:"pointer"
-                }}>← 수정</button>
-                <button onClick={handleSubmit} style={{
-                  flex:2, padding:"14px", borderRadius:12,
-                  background:"linear-gradient(135deg,#059669,#10b981)",
-                  color:"#fff", border:"none", fontSize:15, fontWeight:700, cursor:"pointer"
-                }}>제출하기 ✓</button>
+              <div style={{display:"flex",gap:8}}>
+                <button onClick={()=>setStep("form")} style={{flex:1,padding:"12px",background:"none",border:`1px solid ${C.border}`,color:C.muted,borderRadius:12,fontSize:13,cursor:"pointer"}}>← 수정</button>
+                <button onClick={handleSubmit} style={{flex:2,padding:"14px",borderRadius:12,background:"linear-gradient(135deg,#059669,#10b981)",color:"#fff",border:"none",fontSize:15,fontWeight:700,cursor:"pointer"}}>제출하기 ✓</button>
               </div>
             </div>
           )}
 
           {/* 완료 */}
-          {step === "done" && (
-            <div style={{ textAlign:"center" }}>
-              <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(135deg,#059669,#10b981)", display:"flex", alignItems:"center", justifyContent:"center", margin:"0 auto 16px", fontSize:32 }}>✓</div>
-              <div style={{ color:C.text, fontSize:19, fontWeight:700, marginBottom:6 }}>기록 완료!</div>
-              <div style={{ color:C.muted, fontSize:13, marginBottom:24 }}>이용 기록이 저장되었습니다</div>
-              <div style={{ background:C.inputBg, borderRadius:12, padding:"16px", marginBottom:20, textAlign:"left" }}>
-                <Row label="업체명" value={companyName} />
-                <Row label="장비명" value={selectedEq?.name} />
-                <Row label="사용시간" value={`${(totalMins()/60).toFixed(4)}h`} />
-                <Row label="장비 수수료" value={`${calcFee().toLocaleString()}원`} highlight />
+          {step==="done"&&(
+            <div style={{textAlign:"center"}}>
+              <div style={{width:72,height:72,borderRadius:"50%",background:"linear-gradient(135deg,#059669,#10b981)",display:"flex",alignItems:"center",justifyContent:"center",margin:"0 auto 16px",fontSize:32}}>✓</div>
+              <div style={{color:C.text,fontSize:19,fontWeight:700,marginBottom:6}}>기록 완료!</div>
+              <div style={{color:C.muted,fontSize:13,marginBottom:24}}>이용 기록이 저장되었습니다</div>
+              <div style={{background:C.inputBg,borderRadius:12,padding:"16px",marginBottom:20,textAlign:"left"}}>
+                <Row label="업체명" value={companyName}/>
+                <Row label="장비명" value={selectedEq?.name}/>
+                <Row label="사용시간" value={`${(totalMins()/60).toFixed(4)}h`}/>
+                <Row label="내부 수수료" value={`${calcFee().toLocaleString()}원`} highlight/>
               </div>
-              <Btn onClick={reset}>처음으로</Btn>
+              <button onClick={reset} style={{width:"100%",padding:"15px",background:`linear-gradient(135deg,${C.primaryDark},${C.primary})`,color:"#fff",border:"none",borderRadius:12,fontSize:15,fontWeight:700,cursor:"pointer"}}>처음으로</button>
             </div>
           )}
 
           {/* 기록 목록 */}
-          {step === "records" && (
+          {step==="records"&&(
             <div>
-              <SectionTitle>오늘 기록 ({records.length}건)</SectionTitle>
-              <div style={{ maxHeight:340, overflowY:"auto", marginBottom:16 }}>
-                {records.map((r,i) => (
-                  <div key={i} style={{ background:C.inputBg, borderRadius:10, padding:"12px 14px", marginBottom:8 }}>
-                    <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                      <span style={{ color:C.text, fontWeight:600, fontSize:13 }}>{r.장비명}</span>
-                      <span style={{ color:C.primary, fontWeight:700, fontSize:13 }}>{r.수수료.toLocaleString()}원</span>
+              <div style={{color:"#7dd3fc",fontSize:12,fontWeight:700,letterSpacing:1,marginBottom:14}}>오늘 기록 ({records.length}건)</div>
+              <div style={{maxHeight:340,overflowY:"auto",marginBottom:16}}>
+                {records.map((r,i)=>(
+                  <div key={i} style={{background:C.inputBg,borderRadius:10,padding:"12px 14px",marginBottom:8}}>
+                    <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                      <span style={{color:C.text,fontWeight:600,fontSize:13}}>{r.장비명}</span>
+                      <span style={{color:C.primary,fontWeight:700,fontSize:13}}>{r.수수료.toLocaleString()}원</span>
                     </div>
-                    <div style={{ color:C.muted, fontSize:12 }}>{r.업체명} · {r.담당자} · {r.환산시간}h</div>
+                    <div style={{color:C.muted,fontSize:12}}>{r.업체명} · {r.담당자} · {r.환산시간}h</div>
                   </div>
                 ))}
               </div>
-              <div style={{ background:"#0c2a3f", borderRadius:10, padding:"12px 14px", marginBottom:16, display:"flex", justifyContent:"space-between" }}>
-                <span style={{ color:C.muted, fontSize:13 }}>합계</span>
-                <span style={{ color:C.primary, fontWeight:700 }}>{records.reduce((s,r)=>s+r.수수료,0).toLocaleString()}원</span>
+              <div style={{background:"#0c2a3f",borderRadius:10,padding:"12px 14px",marginBottom:16,display:"flex",justifyContent:"space-between"}}>
+                <span style={{color:C.muted,fontSize:13}}>합계</span>
+                <span style={{color:C.primary,fontWeight:700}}>{records.reduce((s,r)=>s+r.수수료,0).toLocaleString()}원</span>
               </div>
-              <GhostBtn onClick={() => setStep("home")}>← 홈으로</GhostBtn>
+              <button onClick={()=>setStep("home")} style={{width:"100%",padding:"12px",background:"none",border:`1px solid ${C.border}`,color:C.muted,borderRadius:12,fontSize:14,cursor:"pointer"}}>← 홈으로</button>
             </div>
           )}
 
@@ -367,7 +413,7 @@ function App() {
   );
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
 </script>
 </body>
 </html>

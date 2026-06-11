@@ -362,7 +362,7 @@ function App(){
     setStep("done");
   };
 
-  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작:sST,사용종료:eST,사용시간_분:shMins(),사용량_L:isL?qty:"",단가:eq.fee,수수료:shFee(),구분:"이용"});
+  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:todayStr(),사용시작시간:sST,사용종료일:todayStr(),사용종료시간:eST,사용시간_분:shMins(),사용량_L:isL?qty:"",단가:eq.fee,수수료:shFee(),구분:"이용"});
   const submitLong=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:endOnly?"":sDate,사용시작시간:endOnly?"":sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:eDate&&eTime?lgMins():"미정",단가:eq.fee,수수료:eDate&&eTime?lgFee():"미정",구분:endOnly?"종료":"이용"});
   const submitCage=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:"Cage/Day",사용시작일:sDate||"",사용종료일:eDate||"미정",사용일수:eDate?cgDays():"미정",마우스수:m,랫수:r,단가_마우스:500,단가_랫:600,수수료:eDate?cgFee():"미정",구분:endOnly?"퇴실":"입실"});
 

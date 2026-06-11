@@ -24,7 +24,7 @@ input[type=date]::-webkit-calendar-picker-indicator { opacity: 0.6; cursor: poin
 <script type="text/babel">
 
 const KIOSK_URL = "https://fabremin2-debug.github.io/kiosk1/";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwl1S-MZz1C8sYSeYH8_xCplLDQOXctZavjeunqszGrR7I1k8FJDLqn_oj1d2nF6QYHRw/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwqP9cOIRFEIT4l4BERxyv5cVd9RcHrw-5efGWWaF3fx0X14hMlpeuaSoiWILouDonSmQ/exec";
 
 const EQUIPMENT = [
   { name:"회전농축기-4",              code:"12CBF-12D3A3201",  fee:550,   unit:"Hour", type:"short" },
@@ -362,7 +362,7 @@ function App(){
     setStep("done");
   };
 
-  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작:sST,사용종료:eST,사용시간_분:shMins(),단가:eq.fee,수수료:shFee(),구분:"이용"});
+  const submitShort=()=>post({연도:new Date().getFullYear(),날짜:new Date().toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작:sST,사용종료:eST,사용시간_분:shMins(),사용량_L:isL?qty:"",단가:eq.fee,수수료:shFee(),구분:"이용"});
   const submitLong=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:endOnly?"":sDate,사용시작시간:endOnly?"":sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:eDate&&eTime?lgMins():"미정",단가:eq.fee,수수료:eDate&&eTime?lgFee():"미정",구분:endOnly?"종료":"이용"});
   const submitCage=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:"Cage/Day",사용시작일:sDate||"",사용종료일:eDate||"미정",사용일수:eDate?cgDays():"미정",마우스수:m,랫수:r,단가_마우스:500,단가_랫:600,수수료:eDate?cgFee():"미정",구분:endOnly?"퇴실":"입실"});
 

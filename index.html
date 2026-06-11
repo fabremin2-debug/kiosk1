@@ -351,9 +351,14 @@ function App(){
   const filtered=EQUIPMENT.filter(e=>!eqSearch||e.name.includes(eqSearch));
   const last=records[records.length-1];
 
+  const [submitting,setSubmitting]=React.useState(false);
+
   const post=async(record)=>{
+    if(submitting) return;
+    setSubmitting(true);
     setRecords(p=>[...p,record]); setStep("sending");
     try{await fetch(SCRIPT_URL+"?"+new URLSearchParams(record).toString(),{method:"GET",mode:"no-cors"});}catch(e){}
+    setSubmitting(false);
     setStep("done");
   };
 
@@ -361,7 +366,7 @@ function App(){
   const submitLong=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:eq.unit,사용시작일:endOnly?"":sDate,사용시작시간:endOnly?"":sTime,사용종료일:eDate||"미정",사용종료시간:eTime||"미정",사용시간_분:eDate&&eTime?lgMins():"미정",단가:eq.fee,수수료:eDate&&eTime?lgFee():"미정",구분:endOnly?"종료":"이용"});
   const submitCage=()=>post({연도:new Date(endOnly?eDate:sDate).getFullYear(),날짜:new Date(endOnly?eDate:sDate).toLocaleDateString("ko-KR"),업체명:cn,담당자:wo,휴대폰:ph,장비명:eq.name,장비코드:eq.code,부과단위:"Cage/Day",사용시작일:sDate||"",사용종료일:eDate||"미정",사용일수:eDate?cgDays():"미정",마우스수:m,랫수:r,단가_마우스:500,단가_랫:600,수수료:eDate?cgFee():"미정",구분:endOnly?"퇴실":"입실"});
 
-  const reset=()=>{setStep("home");setEq(null);setEqSearch("");setCo("");setCu("");setWo("");setPh("");setSST("");setEST("");setQty("");setSDate(todayStr());setSTime("");setEDate("");setETime("");setMouseQ("");setRatQ("");setEndOnly(false);};
+  const reset=()=>{setStep("home");setEq(null);setEqSearch("");setCo("");setCu("");setWo("");setPh("");setSST("");setEST("");setQty("");setSDate(todayStr());setSTime("");setEDate("");setETime("");setMouseQ("");setRatQ("");setEndOnly(false);setSubmitting(false);};
 
   return(
     <div style={{minHeight:"100vh",background:"#f0f4f8",display:"flex",flexDirection:"column",alignItems:"center",justifyContent:"center",padding:16}}>
@@ -540,7 +545,7 @@ function App(){
               </div>
               <div style={{display:"flex",gap:8}}>
                 <GBtn label="← 수정" onClick={()=>setStep("form")}/>
-                <PBtn green label="제출하기 ✓" onClick={eq.type==="short"?submitShort:eq.type==="long"?submitLong:submitCage}/>
+                <PBtn green label={submitting?"저장 중...":"제출하기 ✓"} onClick={eq.type==="short"?submitShort:eq.type==="long"?submitLong:submitCage} disabled={submitting}/>
               </div>
             </div>
           )}
